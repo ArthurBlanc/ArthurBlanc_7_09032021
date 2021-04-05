@@ -8,9 +8,9 @@
 
 				<b-collapse id="nav-collapse" is-nav>
 					<b-navbar-nav>
-						<b-nav-item href="#"><router-link class="nav-link" to="/">Accueil</router-link></b-nav-item>
-						<b-nav-item href="#"><router-link class="nav-link" to="/discussions">Discussions</router-link></b-nav-item>
-						<b-nav-item href="#"><router-link class="nav-link" to="/medias">Médias & Gif</router-link></b-nav-item>
+						<b-nav-item class="nav-link" to="/">Accueil</b-nav-item>
+						<b-nav-item class="nav-link" to="/discussions">Discussions</b-nav-item>
+						<b-nav-item class="nav-link" to="/medias">Médias & Gif</b-nav-item>
 					</b-navbar-nav>
 
 					<!-- Right aligned nav items -->

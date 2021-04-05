@@ -1,6 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Accueil from "../views/Accueil.vue";
+import Discussions from "../views/Discussions.vue";
+import Medias from "../views/Medias.vue";
+import Signup from "../views/Signup.vue";
 
 Vue.use(VueRouter);
 
@@ -13,18 +16,17 @@ const routes = [
 	{
 		path: "/discussions",
 		name: "Discussions",
-		// route level code-splitting
-		// this generates a separate chunk (about.[hash].js) for this route
-		// which is lazy-loaded when the route is visited.
-		component: () => import(/* webpackChunkName: "about" */ "../views/Discussions.vue"),
+		component: Discussions,
 	},
 	{
 		path: "/medias",
 		name: "Médias",
-		// route level code-splitting
-		// this generates a separate chunk (about.[hash].js) for this route
-		// which is lazy-loaded when the route is visited.
-		component: () => import(/* webpackChunkName: "about" */ "../views/Medias.vue"),
+		component: Medias,
+	},
+	{
+		path: "/signup",
+		name: "Signup",
+		component: Signup,
 	},
 ];
 

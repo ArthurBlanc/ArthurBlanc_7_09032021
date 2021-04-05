@@ -17,7 +17,7 @@
 		</b-container>
 
 		<div class="footer-copyright text-center py-3 text-light">
-			© 2021 Copyright :
+			<span>Site réalisé par </span>
 			<a class="text-secondary" href="https://github.com/ArthurBlanc/">Arthur BLANC</a>
 		</div>
 	</footer>

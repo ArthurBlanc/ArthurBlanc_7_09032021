@@ -11,6 +11,12 @@
 				<b-row>
 					<b-col md="8" offset-md="2">
 						<div class="mb-3">
+							<nav>
+								<b-nav pills align="center" class="mb-3">
+									<b-nav-item to="/">Se connecter</b-nav-item>
+									<b-nav-item to="/signup" class="text-white" active>S'inscrire</b-nav-item>
+								</b-nav>
+							</nav>
 							<b-form @submit.prevent="userForm()">
 								<b-form-row>
 									<div class="col">

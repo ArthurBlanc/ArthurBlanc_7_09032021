@@ -11,6 +11,13 @@ Vue.use(IconsPlugin);
 
 Vue.config.productionTip = false;
 
+//**Global Variables**
+//User / Token
+if (localStorage.user != undefined) {
+	Vue.prototype.$token = JSON.parse(localStorage.user).token;
+	Vue.prototype.$user = JSON.parse(localStorage.user);
+}
+
 new Vue({
 	router,
 	store,

@@ -14,14 +14,10 @@
 					</b-navbar-nav>
 
 					<!-- Right aligned nav items -->
-					<b-navbar-nav class="ml-auto">
-						<b-nav-item-dropdown right>
-							<!-- Using 'button-content' slot -->
-							<template #button-content>
-								<em>Username</em>
-							</template>
+					<b-navbar-nav class="ml-auto" v-if="connected">
+						<b-nav-item-dropdown :text="this.$user.prenom + ' ' + this.$user.nom" right>
 							<b-dropdown-item href="#">Profil</b-dropdown-item>
-							<b-dropdown-item href="#">Déconnexion</b-dropdown-item>
+							<b-dropdown-item @click="disconnect()">Déconnexion</b-dropdown-item>
 						</b-nav-item-dropdown>
 					</b-navbar-nav>
 				</b-collapse>
@@ -33,6 +29,32 @@
 <script>
 export default {
 	name: "navBar",
+
+	data() {
+		return {
+			connected: false,
+		};
+	},
+
+	methods: {
+		checkConnected() {
+			if (localStorage.user == undefined || this.$route.name == "Login") {
+				if (this.$route.name != "Login") {
+					this.$router.replace("/login");
+				}
+				this.connected = false;
+			} else if (localStorage.user !== undefined) {
+				this.connected = true;
+			}
+		},
+		disconnect() {
+			localStorage.removeItem("user");
+			location.href = "/";
+		},
+	},
+	created() {
+		this.checkConnected();
+	},
 };
 </script>
 

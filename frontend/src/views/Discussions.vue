@@ -6,7 +6,7 @@
 		<main>
 			<b-container>
 				<b-row>
-					<b-col md="8" offset-md="2">
+					<b-col md="8" offset-md="2" v-if="connected">
 						<div class="mb-3">
 							<b-button id="show-btn" variant="primary" block @click="showModal">Créer une discussion</b-button>
 
@@ -43,10 +43,9 @@ export default {
 	},
 	data() {
 		return {
-			form: {
-				text: "",
-			},
+			text: "",
 			show: true,
+			connected: false,
 		};
 	},
 	methods: {
@@ -65,6 +64,17 @@ export default {
 			// when the modal has hidden
 			this.$refs["my-modal"].toggle("#toggle-btn");
 		},
+		checkConnected() {
+			if (localStorage.user == undefined) {
+				this.$router.replace("/login");
+				this.connected = false;
+			} else if (localStorage.user !== undefined) {
+				this.connected = true;
+			}
+		},
+	},
+	created() {
+		this.checkConnected();
 	},
 };
 </script>

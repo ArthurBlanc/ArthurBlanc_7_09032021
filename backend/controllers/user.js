@@ -2,6 +2,8 @@
 const sql = require("../middleware/database");
 // Import "bcrypt" package - A library to help you hash passwords
 const bcrypt = require("bcrypt");
+// Import "jsonwebtoken" package - Create and verify authentication tokens
+const jwt = require("jsonwebtoken");
 // Import "crypto-js" package - JavaScript library of crypto standards
 const CryptoJS = require("crypto-js");
 // Import "dotenv" package - Loads environment variables from .env file
@@ -45,6 +47,40 @@ exports.signup = (req, res, next) => {
 					if (error) throw error;
 					return res.status(201).json({ message: "Votre compte a été créé !" });
 				});
+			});
+		}
+	});
+};
+// Route POST - Login
+exports.login = (req, res, next) => {
+	// Email encryption (AES) with "crypto-js"
+	const cryptedEmail = CryptoJS.AES.encrypt(req.body.email, key, { iv: iv }).toString();
+	// Check if the user email (encrypted) is in the database
+	sql.query("SELECT * FROM users WHERE email= ?", [cryptedEmail], (error, results, rows) => {
+		//Si utilisateur trouvé :
+		if (results.length > 0) {
+			// Compare password hash with database
+			bcrypt
+				.compare(req.body.password, results[0].password)
+				.then((valid) => {
+					// Check if password is valid
+					if (!valid) {
+						return res.status(401).json({ error: "Mot de passe incorrect !" });
+					}
+					res.status(200).json({
+						userId: results[0].id,
+						nom: results[0].nom,
+						prenom: results[0].prenom,
+						admin: results[0].admin,
+						email: req.body.email,
+						// Create a authentication token with "jsonwebtoken"
+						token: jwt.sign({ userId: results[0].id }, `${process.env.JWT_SECRET_KEY}`, { expiresIn: "24h" }),
+					});
+				})
+				.catch((error) => res.status(500).json({ error }));
+		} else {
+			res.status(404).json({
+				message: "Utilisateur inconnu.",
 			});
 		}
 	});

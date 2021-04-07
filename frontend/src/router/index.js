@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Accueil from "../views/Accueil.vue";
 import Discussions from "../views/Discussions.vue";
 import Medias from "../views/Medias.vue";
+import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
 
 Vue.use(VueRouter);
@@ -22,6 +23,11 @@ const routes = [
 		path: "/medias",
 		name: "Médias",
 		component: Medias,
+	},
+	{
+		path: "/login",
+		name: "Login",
+		component: Login,
 	},
 	{
 		path: "/signup",

@@ -85,3 +85,11 @@ exports.login = (req, res, next) => {
 		}
 	});
 };
+// Route DELETE - Delete one user
+exports.deleteUser = (req, res, next) => {
+	let userId = req.params.id;
+	sql.query("DELETE FROM users WHERE id = ?", [userId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};

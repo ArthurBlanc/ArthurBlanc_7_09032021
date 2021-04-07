@@ -16,7 +16,7 @@
 					<!-- Right aligned nav items -->
 					<b-navbar-nav class="ml-auto" v-if="connected">
 						<b-nav-item-dropdown :text="this.$user.prenom + ' ' + this.$user.nom" right>
-							<b-dropdown-item href="#">Profil</b-dropdown-item>
+							<b-dropdown-item to="/profil">Profil</b-dropdown-item>
 							<b-dropdown-item @click="disconnect()">Déconnexion</b-dropdown-item>
 						</b-nav-item-dropdown>
 					</b-navbar-nav>

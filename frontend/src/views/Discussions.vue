@@ -8,17 +8,16 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<div class="mb-3">
-							<b-button id="show-btn" variant="primary" block @click="showModal">Créer une discussion</b-button>
+							<b-button variant="primary" block @click="toggleModal">Créer une discussion</b-button>
 
-							<b-modal ref="my-modal" hide-footer title="Créer une discussion">
+							<b-modal ref="post-modal" hide-footer title="Créer une discussion">
 								<div class="d-block text-center">
-									<b-form @submit="onSubmit" v-if="show">
-										<b-form-textarea id="textarea" v-model="text" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6"></b-form-textarea>
+									<b-form @submit.prevent="onSubmit()">
+										<b-form-textarea id="textarea" v-model="content" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6" required></b-form-textarea>
 
-										<pre class="mb-0">{{ text }}</pre>
+										<b-button class="mt-3" variant="primary" type="submit" block>Publier</b-button>
 									</b-form>
 								</div>
-								<b-button class="mt-3" type="submit" variant="primary" block @click="hideModal">Publier</b-button>
 							</b-modal>
 						</div>
 						<Post />
@@ -34,6 +33,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import Post from "@/components/Post.vue";
 
 export default {
@@ -46,23 +46,37 @@ export default {
 			text: "",
 			show: true,
 			connected: false,
+			content: "",
 		};
 	},
 	methods: {
-		onSubmit(event) {
-			event.preventDefault();
-			alert(JSON.stringify(this.form));
-		},
-		showModal() {
-			this.$refs["my-modal"].show();
-		},
-		hideModal() {
-			this.$refs["my-modal"].hide();
+		// Form
+		onSubmit() {
+			let userId = this.$user.userId;
+			let content = this.content;
+			axios
+				.post(
+					`http://localhost:3000/api/posts/`,
+					{
+						userId,
+						content,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+				.then(
+					this.toggleModal(),
+					setTimeout(() => {
+						this.content = "";
+					}, 200)
+				);
 		},
 		toggleModal() {
-			// We pass the ID of the button that we want to return focus to
-			// when the modal has hidden
-			this.$refs["my-modal"].toggle("#toggle-btn");
+			this.$refs["post-modal"].toggle("#toggle-post-modal");
 		},
 		checkConnected() {
 			if (localStorage.user == undefined) {

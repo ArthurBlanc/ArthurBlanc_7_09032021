@@ -10,6 +10,8 @@ const helmet = require("helmet");
 // Import "limiter" middleware - Basic IP rate-limiting middleware. Use to limit repeated requests to public APIs and/or endpoints (Brute force)
 const limiter = require("./middleware/limiter");
 
+// Import "post" route
+const postRoutes = require("./routes/post");
 // Import "user" route
 const userRoutes = require("./routes/user");
 
@@ -23,5 +25,6 @@ app.use("/api/auth", limiter);
 app.use(bodyParser.json());
 
 app.use("/api/auth", userRoutes);
+app.use("/api/posts", postRoutes);
 
 module.exports = app;

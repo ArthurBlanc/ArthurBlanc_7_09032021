@@ -20,11 +20,7 @@
 								</div>
 							</b-modal>
 						</div>
-						<Post />
-						<Post />
-						<Post />
-						<Post />
-						<Post />
+						<Post :posts="posts" />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -47,6 +43,7 @@ export default {
 			show: true,
 			connected: false,
 			content: "",
+			posts: [],
 		};
 	},
 	methods: {
@@ -71,12 +68,24 @@ export default {
 				.then(
 					this.toggleModal(),
 					setTimeout(() => {
-						this.content = "";
+						(this.content = ""), this.getAllPosts();
 					}, 200)
 				);
 		},
 		toggleModal() {
 			this.$refs["post-modal"].toggle("#toggle-post-modal");
+		},
+		getAllPosts() {
+			axios
+				.get(`http://localhost:3000/api/posts/`, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.$token}`,
+					},
+				})
+				.then((res) => {
+					this.posts = res.data;
+				});
 		},
 		checkConnected() {
 			if (localStorage.user == undefined) {
@@ -89,6 +98,12 @@ export default {
 	},
 	created() {
 		this.checkConnected();
+	},
+
+	mounted() {
+		if (localStorage.user != undefined) {
+			this.getAllPosts();
+		}
 	},
 };
 </script>

@@ -10,3 +10,10 @@ exports.createPost = (req, res, next) => {
 		return res.status(201).json({ message: "Votre post a été publié !" });
 	});
 };
+// Route GET - Get all the posts
+exports.getAllPosts = (req, res, next) => {
+	sql.query("SELECT users.nom, users.prenom, posts.id, posts.userId, posts.content, posts.date AS date FROM users INNER JOIN posts ON users.id = posts.userId ORDER BY date DESC", (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};

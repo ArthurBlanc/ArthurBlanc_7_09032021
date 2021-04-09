@@ -32,11 +32,9 @@
 								<b-button class="mt-3" type="submit" variant="primary" block @click="hideModal">Publier</b-button>
 							</b-modal>
 						</div>
+						<Post :posts="posts" />
 						<PostMedia />
-						<Post />
-						<Post />
 						<PostMedia />
-						<Post />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -45,6 +43,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import Post from "@/components/Post.vue";
 import PostMedia from "@/components/PostMedia.vue";
 
@@ -60,6 +59,7 @@ export default {
 			file1: null,
 			show: true,
 			connected: false,
+			posts: [],
 		};
 	},
 	methods: {
@@ -78,6 +78,18 @@ export default {
 			// when the modal has hidden
 			this.$refs["my-modal"].toggle("#toggle-btn");
 		},
+		getAllPosts() {
+			axios
+				.get(`http://localhost:3000/api/posts/`, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.$token}`,
+					},
+				})
+				.then((res) => {
+					this.posts = res.data;
+				});
+		},
 		checkConnected() {
 			if (localStorage.user == undefined) {
 				this.$router.replace("/login");
@@ -89,6 +101,12 @@ export default {
 	},
 	created() {
 		this.checkConnected();
+	},
+
+	mounted() {
+		if (localStorage.user != undefined) {
+			this.getAllPosts();
+		}
 	},
 };
 </script>

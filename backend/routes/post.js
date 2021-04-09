@@ -9,5 +9,7 @@ const router = express.Router();
 
 // Route POST - Create one post
 router.post("/", auth, postCtrl.createPost);
+// Route GET - Get all the posts
+router.get("/", auth, postCtrl.getAllPosts);
 
 module.exports = router;

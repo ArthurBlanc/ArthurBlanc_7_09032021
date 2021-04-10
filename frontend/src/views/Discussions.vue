@@ -20,7 +20,7 @@
 								</div>
 							</b-modal>
 						</div>
-						<Post :posts="posts" />
+						<Post :getPosts="this.getAllPosts" :posts="posts" />
 					</b-col>
 				</b-row>
 			</b-container>

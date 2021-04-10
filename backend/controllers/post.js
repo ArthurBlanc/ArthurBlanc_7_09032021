@@ -17,3 +17,11 @@ exports.getAllPosts = (req, res, next) => {
 		return res.status(200).json(results);
 	});
 };
+// Route DELETE - Delete one post
+exports.deletePost = (req, res, next) => {
+	let postId = req.params.id;
+	sql.query("DELETE FROM posts WHERE id = ?", [postId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};

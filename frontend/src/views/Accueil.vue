@@ -32,7 +32,7 @@
 								<b-button class="mt-3" type="submit" variant="primary" block @click="hideModal">Publier</b-button>
 							</b-modal>
 						</div>
-						<Post :posts="posts" />
+						<Post :getPosts="this.getAllPosts" :posts="posts" />
 						<PostMedia />
 						<PostMedia />
 					</b-col>

@@ -17,6 +17,14 @@ exports.getAllPosts = (req, res, next) => {
 		return res.status(200).json(results);
 	});
 };
+// Route GET - Get one post
+exports.getOnePost = (req, res, next) => {
+	let postId = req.params.id;
+	sql.query("SELECT users.nom, users.prenom, posts.id, posts.userId, posts.content, posts.date AS date FROM users INNER JOIN posts ON users.id = posts.userId WHERE posts.id = ?", [postId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};
 // Route DELETE - Delete one post
 exports.deletePost = (req, res, next) => {
 	let postId = req.params.id;

@@ -28,8 +28,16 @@
 					<h2>{{ post.content }}</h2>
 				</b-card-text>
 
-				<PostBottomButton />
-
+				<b-row>
+					<b-col cols="6" class="text-left">
+						<b-button v-if="$route.name !== 'Post'" :to="{ name: 'Post', params: { id: post.id } }"><b-icon icon="three-dots-vertical" aria-label="Info"></b-icon></b-button>
+						<b-button v-b-toggle.collapse-2 class="m-1"><b-icon icon="chat-left-text" aria-label="Commentaires"></b-icon> 2</b-button>
+					</b-col>
+					<b-col cols="6" class="text-right">
+						<b-button href="#" variant="primary"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> 1</b-button>
+						<b-button href="#" variant="danger" class="m-1"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> 0</b-button>
+					</b-col>
+				</b-row>
 				<!-- Element to collapse -->
 				<b-collapse id="collapse-2">
 					<Comment />
@@ -42,13 +50,11 @@
 <script>
 import axios from "axios";
 import Comment from "@/components/Comment.vue";
-import PostBottomButton from "@/components/PostBottomButton";
 
 export default {
 	name: "post",
 	components: {
 		Comment,
-		PostBottomButton,
 	},
 
 	props: {
@@ -77,7 +83,11 @@ export default {
 					},
 				})
 				.then(() => {
-					this.getPosts();
+					if (this.$route.name == "Post") {
+						this.$router.replace("/");
+					} else {
+						this.getPosts();
+					}
 				});
 		},
 	},

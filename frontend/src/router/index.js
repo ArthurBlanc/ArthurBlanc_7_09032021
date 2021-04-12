@@ -5,6 +5,7 @@ import Discussions from "../views/Discussions.vue";
 import Medias from "../views/Medias.vue";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
+import Post from "../views/Post.vue";
 import Profil from "../views/Profil.vue";
 
 Vue.use(VueRouter);
@@ -34,6 +35,11 @@ const routes = [
 		path: "/signup",
 		name: "Signup",
 		component: Signup,
+	},
+	{
+		path: "/post/:id",
+		name: "Post",
+		component: Post,
 	},
 	{
 		path: "/profil",

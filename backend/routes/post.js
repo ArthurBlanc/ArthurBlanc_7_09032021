@@ -11,6 +11,8 @@ const router = express.Router();
 router.post("/", auth, postCtrl.createPost);
 // Route GET - Get all the posts
 router.get("/", auth, postCtrl.getAllPosts);
+// Route GET - Get one post
+router.get("/:id", auth, postCtrl.getOnePost);
 // Route DELETE - Delete one post
 router.delete("/:id", auth, postCtrl.deletePost);
 

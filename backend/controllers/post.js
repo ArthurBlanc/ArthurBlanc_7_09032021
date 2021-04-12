@@ -25,6 +25,15 @@ exports.getOnePost = (req, res, next) => {
 		return res.status(200).json(results);
 	});
 };
+// Route PUT - Modify one post
+exports.modifyPost = (req, res, next) => {
+	let postContent = req.body.content;
+	let postId = req.params.id;
+	sql.query("UPDATE posts SET content = ? WHERE id = ?", [postContent, postId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};
 // Route DELETE - Delete one post
 exports.deletePost = (req, res, next) => {
 	let postId = req.params.id;

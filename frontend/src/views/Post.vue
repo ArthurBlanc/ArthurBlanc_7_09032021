@@ -9,6 +9,15 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<OnePost :getPosts="this.getOnePost" :posts="posts" />
+						<div v-if="modify">
+							<b-form>
+								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" required></b-form-textarea>
+
+								<b-button variant="primary" type="submit" @click="modifyOnePost(), (modify = false)">Publier les modifications</b-button>
+							</b-form>
+						</div>
+
+						<b-button class="mb-3" variant="danger" v-if="authorized && !modify" @click="modify = true">Modifier</b-button>
 					</b-col>
 				</b-row>
 			</b-container>
@@ -28,6 +37,9 @@ export default {
 
 	data() {
 		return {
+			authorized: false,
+			modify: false,
+
 			posts: [],
 			post: [],
 			connected: false,
@@ -48,8 +60,38 @@ export default {
 				.then((res) => {
 					this.posts = res.data;
 					this.post = res.data[0];
+
+					if (this.$user.userId === this.post.userId || this.$user.admin == 1) {
+						this.authorized = true;
+					} else {
+						this.authorized = false;
+					}
 				});
 		},
+
+		modifyOnePost() {
+			const postId = this.$route.params.id;
+			const content = document.querySelector("#modify-content").value;
+			axios
+				.put(
+					`http://localhost:3000/api/posts/${postId}`,
+					{
+						postId,
+						content,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+
+				.then(() => {
+					this.getOnePost();
+				});
+		},
+
 		checkConnected() {
 			if (localStorage.user == undefined) {
 				this.$router.replace("/login");

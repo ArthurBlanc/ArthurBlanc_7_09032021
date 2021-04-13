@@ -31,7 +31,7 @@
 				<b-row>
 					<b-col cols="6" class="text-left">
 						<b-button v-if="$route.name !== 'Post'" :to="{ name: 'Post', params: { id: post.id } }"><b-icon icon="three-dots-vertical" aria-label="Info"></b-icon></b-button>
-						<b-button v-b-toggle.collapse-2 class="m-1"><b-icon icon="chat-left-text" aria-label="Commentaires"></b-icon> 2</b-button>
+						<b-button v-b-toggle.collapse-2 class="m-1"><b-icon icon="chat-left-text" aria-label="Commentaires"></b-icon></b-button>
 					</b-col>
 					<b-col cols="6" class="text-right">
 						<b-button href="#" variant="primary"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> 1</b-button>
@@ -40,7 +40,21 @@
 				</b-row>
 				<!-- Element to collapse -->
 				<b-collapse id="collapse-2">
-					<Comment />
+					<b-card class="post-comment">
+						<div class="text-left">
+							<b-row>
+								<b-col lg="1" cols="2" class="pr-0">
+									<b-avatar class="" href="#bar" src="https://placekitten.com/300/300"></b-avatar>
+								</b-col>
+								<b-col lg="11" cols="10">
+									<b-form @submit.prevent="createComment(post.id)">
+										<b-form-input v-model="commentContent" placeholder="Ecrivez votre commentaire" required></b-form-input>
+										<b-button type="submit" id="send-comment" style="display:none" tabindex="-1">Envoyer</b-button>
+									</b-form>
+								</b-col>
+							</b-row>
+						</div>
+					</b-card>
 				</b-collapse>
 			</b-card>
 		</article>
@@ -49,13 +63,9 @@
 
 <script>
 import axios from "axios";
-import Comment from "@/components/Comment.vue";
 
 export default {
 	name: "post",
-	components: {
-		Comment,
-	},
 
 	props: {
 		getPosts: {
@@ -64,6 +74,12 @@ export default {
 		posts: {
 			type: Array,
 		},
+	},
+
+	data() {
+		return {
+			commentContent: "",
+		};
 	},
 
 	methods: {
@@ -90,12 +106,41 @@ export default {
 					}
 				});
 		},
+
+		//Comments
+		createComment(postId) {
+			const userId = this.$user.userId;
+			const content = this.commentContent;
+			axios
+				.post(
+					`http://localhost:3000/api/comments/${postId}`,
+					{
+						userId,
+						content,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+				.then(() => {
+					this.getPosts();
+					this.commentContent = "";
+					document.activeElement.blur();
+				});
+		},
 	},
 };
 </script>
 <style scoped lang="scss">
 article h2 {
 	font-size: 1.5rem;
+}
+.post-comment .form-control:invalid {
+	border-color: #ced4da;
+	box-shadow: none;
 }
 .post-date {
 	font-style: italic;

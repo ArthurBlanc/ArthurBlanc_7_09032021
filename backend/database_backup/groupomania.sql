@@ -5,6 +5,7 @@ USE groupomania;
 
 SET NAMES utf8;
 
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 
@@ -38,9 +39,30 @@ CREATE TABLE `posts` (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `comments`
+--
+
+CREATE TABLE `comments` (
+  `id` smallint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `userId` smallint UNSIGNED NOT NULL,
+  `postId` smallint UNSIGNED NOT NULL,
+  `content` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Contraintes pour la table `posts`
 --
 ALTER TABLE `posts` ADD CONSTRAINT `fk_userId_posts` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Contraintes pour la table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `fk_postId_comments` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_userId_comments` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 

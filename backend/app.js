@@ -14,6 +14,8 @@ const limiter = require("./middleware/limiter");
 const postRoutes = require("./routes/post");
 // Import "user" route
 const userRoutes = require("./routes/user");
+// Import "comment" route
+const commentRoutes = require("./routes/comment");
 
 const app = express();
 
@@ -26,5 +28,6 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
 
 module.exports = app;

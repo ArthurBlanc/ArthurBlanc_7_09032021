@@ -87,7 +87,25 @@ export default {
 					},
 				})
 				.then((res) => {
-					this.posts = res.data;
+					//this.posts = res.data; Get posts without comments
+					let commentsList = res.data;
+
+					this.posts = commentsList.map((comment) => {
+						comment.comments = 0;
+						commentsList.forEach((post) => {
+							axios
+								.get(`http://localhost:3000/api/comments/${post.id}/`, {
+									headers: {
+										"Content-Type": "application/json",
+										Authorization: `Bearer ${this.$token}`,
+									},
+								})
+								.then((res) => {
+									post["comments"] = res.data;
+								});
+						});
+						return comment;
+					});
 				});
 		},
 		checkConnected() {

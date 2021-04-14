@@ -9,5 +9,7 @@ const router = express.Router();
 
 // Route POST - Create one comment
 router.post("/:postId/", auth, commentCtrl.createComment);
+// Route GET - Get all comments of a post
+router.get("/:postId/", auth, commentCtrl.getAllComments);
 
 module.exports = router;

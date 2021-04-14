@@ -11,3 +11,15 @@ exports.createComment = (req, res, next) => {
 		return res.status(201).json({ message: "Votre commentaire a été publié !" });
 	});
 };
+// Route GET - Get all comments of a post
+exports.getAllComments = (req, res, next) => {
+	let postId = req.params.postId;
+	sql.query(
+		"SELECT users.id, users.nom, users.prenom, comments.id, comments.content, comments.userId, comments.date, comments.postId FROM users INNER JOIN comments ON users.id = comments.userId WHERE comments.postId = ? ORDER BY comments.date DESC",
+		[postId],
+		(error, results, fields) => {
+			if (error) throw error;
+			return res.status(200).json(results);
+		}
+	);
+};

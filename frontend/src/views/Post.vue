@@ -8,7 +8,7 @@
 			<b-container>
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
-						<OnePost :getPosts="this.getOnePost" :posts="posts" />
+						<OnePost :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
 						<div v-if="modify">
 							<b-form>
 								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" required></b-form-textarea>
@@ -39,6 +39,7 @@ export default {
 		return {
 			authorized: false,
 			modify: false,
+			visible: true,
 
 			posts: [],
 			post: [],
@@ -58,7 +59,26 @@ export default {
 					},
 				})
 				.then((res) => {
-					this.posts = res.data;
+					//this.posts = res.data; Get posts without comments
+					let commentsList = res.data;
+
+					this.posts = commentsList.map((comment) => {
+						comment.comments = 0;
+						commentsList.forEach((post) => {
+							axios
+								.get(`http://localhost:3000/api/comments/${post.id}`, {
+									headers: {
+										"Content-Type": "application/json",
+										Authorization: `Bearer ${this.$token}`,
+									},
+								})
+								.then((res) => {
+									post["comments"] = res.data;
+								});
+						});
+						return comment;
+					});
+
 					this.post = res.data[0];
 
 					if (this.$user.userId === this.post.userId || this.$user.admin == 1) {

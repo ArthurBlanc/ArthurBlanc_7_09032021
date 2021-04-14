@@ -31,15 +31,19 @@
 				<b-row>
 					<b-col cols="6" class="text-left">
 						<b-button v-if="$route.name !== 'Post'" :to="{ name: 'Post', params: { id: post.id } }"><b-icon icon="three-dots-vertical" aria-label="Info"></b-icon></b-button>
-						<b-button v-b-toggle.collapse-2 class="m-1"><b-icon icon="chat-left-text" aria-label="Commentaires"></b-icon></b-button>
+						<b-button v-b-toggle="'accordion-' + post.id" class="m-1">
+							<b-icon icon="chat-left-text" aria-label="Commentaires"></b-icon>
+							<span class="pl-1" v-if="post.comments.length > 0"> {{ post.comments.length }}</span>
+						</b-button>
 					</b-col>
 					<b-col cols="6" class="text-right">
 						<b-button href="#" variant="primary"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> 1</b-button>
 						<b-button href="#" variant="danger" class="m-1"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> 0</b-button>
 					</b-col>
 				</b-row>
+
 				<!-- Element to collapse -->
-				<b-collapse id="collapse-2">
+				<b-collapse :id="'accordion-' + post.id" :visible="visible" accordion="my-accordion" role="tabpanel">
 					<b-card class="post-comment">
 						<div class="text-left">
 							<b-row>
@@ -55,6 +59,20 @@
 							</b-row>
 						</div>
 					</b-card>
+					<div v-if="post.comments.length > 0">
+						<b-card v-for="comment in post.comments" :key="comment.id">
+							<div class="text-left">
+								<b-button variant="outline-danger" class="float-right btn-sm">
+									<b-icon icon="Trash" aria-label="Delete"></b-icon>
+								</b-button>
+
+								<b-avatar class="" href="#bar" src="https://placekitten.com/300/300"></b-avatar>
+								<span> {{ comment.prenom }} {{ comment.nom }}</span>
+								<span class="post-date"> - publié le {{ dateFormat(comment.date) }}</span>
+								<b-card-text class="text-justify mt-3">{{ comment.content }}</b-card-text>
+							</div>
+						</b-card>
+					</div>
 				</b-collapse>
 			</b-card>
 		</article>
@@ -73,6 +91,9 @@ export default {
 		},
 		posts: {
 			type: Array,
+		},
+		visible: {
+			type: Boolean,
 		},
 	},
 

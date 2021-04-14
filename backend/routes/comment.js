@@ -11,5 +11,7 @@ const router = express.Router();
 router.post("/:postId/", auth, commentCtrl.createComment);
 // Route GET - Get all comments of a post
 router.get("/:postId/", auth, commentCtrl.getAllComments);
+// Route DELETE - Delete one comment
+router.delete("/:id", auth, commentCtrl.deleteComment);
 
 module.exports = router;

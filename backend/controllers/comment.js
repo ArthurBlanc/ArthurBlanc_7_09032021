@@ -23,3 +23,11 @@ exports.getAllComments = (req, res, next) => {
 		}
 	);
 };
+// Route DELETE - Delete one comment
+exports.deleteComment = (req, res, next) => {
+	let commentId = req.params.id;
+	sql.query("DELETE FROM comments WHERE comments.id = ?", [commentId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};

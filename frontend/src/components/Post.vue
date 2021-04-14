@@ -62,9 +62,23 @@
 					<div v-if="post.comments.length > 0">
 						<b-card v-for="comment in post.comments" :key="comment.id">
 							<div class="text-left">
-								<b-button variant="outline-danger" class="float-right btn-sm">
+								<b-button variant="outline-danger" class="float-right btn-sm" @click="$bvModal.show('modal-comment-' + post.id + comment.id)" v-if="comment.userId == $user.userId || $user.admin == 1">
 									<b-icon icon="Trash" aria-label="Delete"></b-icon>
 								</b-button>
+
+								<b-modal :id="'modal-comment-' + post.id + comment.id">
+									<template #modal-header="{ }">
+										<h5>Confirmation de la suppression</h5>
+									</template>
+									<template>
+										<p>Etes-vous sûr de vouloir supprimer ce commentaire ?</p>
+									</template>
+
+									<template #modal-footer="{ ok, cancel }">
+										<b-button size="sm" variant="danger" @click="deleteComment(comment.id), ok()">Supprimer</b-button>
+										<b-button size="sm" @click="cancel()">Annuler</b-button>
+									</template>
+								</b-modal>
 
 								<b-avatar class="" href="#bar" src="https://placekitten.com/300/300"></b-avatar>
 								<span> {{ comment.prenom }} {{ comment.nom }}</span>
@@ -150,6 +164,18 @@ export default {
 					this.getPosts();
 					this.commentContent = "";
 					document.activeElement.blur();
+				});
+		},
+		deleteComment(commentId) {
+			axios
+				.delete(`http://localhost:3000/api/comments/${commentId}`, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.$token}`,
+					},
+				})
+				.then(() => {
+					this.getPosts();
 				});
 		},
 	},

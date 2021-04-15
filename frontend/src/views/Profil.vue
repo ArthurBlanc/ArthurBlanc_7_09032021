@@ -8,7 +8,7 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<div class="mb-3">
-							<div class="mb-3">
+							<div class="mb-3" v-if="modify == false">
 								<b-list-group>
 									<b-list-group-item>Prenom : {{ this.$user.prenom }}</b-list-group-item>
 									<b-list-group-item>Nom : {{ this.$user.nom }}</b-list-group-item>
@@ -16,7 +16,28 @@
 								</b-list-group>
 							</div>
 
-							<div>
+							<b-form @submit.prevent="userForm()" v-if="modify">
+								<b-form-row>
+									<div class="col">
+										<b-form-group id="input-group-prenom" :label="'Prenom actuel : ' + this.$user.prenom" label-for="signup-prenom">
+											<b-form-input id="signup-prenom" v-model="form.prenom" type="text" placeholder="Entrez votre prenom" required></b-form-input>
+										</b-form-group>
+									</div>
+									<div class="col">
+										<b-form-group id="input-group-nom" :label="'Nom actuel : ' + this.$user.nom" label-for="signup-nom">
+											<b-form-input id="signup-nom" v-model="form.nom" type="text" placeholder="Entrez votre nom" required></b-form-input>
+										</b-form-group>
+									</div>
+								</b-form-row>
+
+								<b-button type="submit" variant="primary" class="mb-3">Publier les modifications</b-button>
+							</b-form>
+
+							<b-button class="mb-3" variant="danger" v-if="modify" @click="modify = false">Annuler les modifications</b-button>
+							<div v-if="!modify">
+								<div>
+									<b-button class="mb-3" variant="primary" @click="modify = true">Modifier</b-button>
+								</div>
 								<div>
 									<b-button variant="danger" @click="$bvModal.show('modal-comment-')">
 										<span>Supprimer le compte</span>
@@ -54,6 +75,11 @@ export default {
 	data() {
 		return {
 			connected: false,
+			modify: false,
+			form: {
+				prenom: "",
+				nom: "",
+			},
 		};
 	},
 
@@ -72,6 +98,35 @@ export default {
 					location.href = "/";
 				});
 		},
+
+		userForm() {
+			let userId = this.$user.userId;
+			let prenom = this.form.prenom;
+			let nom = this.form.nom;
+			let email = this.$user.email;
+			let admin = this.$user.admin;
+			axios
+				.put(
+					`http://localhost:3000/api/auth/modify_user/${userId}`,
+					{
+						prenom,
+						nom,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+				.then(() => {
+					let user = JSON.parse(localStorage.getItem("user"));
+					const token = user.token;
+					localStorage.setItem("user", JSON.stringify({ userId: userId, nom: nom, prenom: prenom, admin: admin, token: token, email: email }));
+					location.reload();
+				});
+		},
+
 		checkConnected() {
 			if (localStorage.user == undefined) {
 				this.$router.replace("/login");

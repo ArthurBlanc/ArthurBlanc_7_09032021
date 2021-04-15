@@ -11,6 +11,8 @@ const auth = require("../middleware/auth");
 router.post("/signup", userCtrl.signup);
 // Route POST - Login
 router.post("/login", userCtrl.login);
+// Route PUT - Modify one user
+router.put("/modify_user/:id", auth, userCtrl.modifyUser);
 // Route DELETE - Delete one user
 router.delete("/delete_user/:id", auth, userCtrl.deleteUser);
 

@@ -85,6 +85,16 @@ exports.login = (req, res, next) => {
 		}
 	});
 };
+// Route PUT - Modify one user
+exports.modifyUser = (req, res, next) => {
+	let prenom = req.body.prenom;
+	let nom = req.body.nom;
+	let userId = req.params.id;
+	sql.query("UPDATE users SET prenom = ?, nom = ? WHERE id = ?", [prenom, nom, userId], (error, results, fields) => {
+		if (error) throw error;
+		return res.status(200).json(results);
+	});
+};
 // Route DELETE - Delete one user
 exports.deleteUser = (req, res, next) => {
 	let userId = req.params.id;

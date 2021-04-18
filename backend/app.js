@@ -12,6 +12,8 @@ const limiter = require("./middleware/limiter");
 
 // Import "post" route
 const postRoutes = require("./routes/post");
+// Import "thumb" route
+const thumbRoutes = require("./routes/thumb");
 // Import "user" route
 const userRoutes = require("./routes/user");
 // Import "comment" route
@@ -29,5 +31,6 @@ app.use(bodyParser.json());
 app.use("/api/auth", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/thumbs", thumbRoutes);
 
 module.exports = app;

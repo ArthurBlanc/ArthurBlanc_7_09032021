@@ -37,8 +37,8 @@
 						</b-button>
 					</b-col>
 					<b-col cols="6" class="text-right">
-						<b-button href="#" variant="primary"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> 1</b-button>
-						<b-button href="#" variant="danger" class="m-1"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> 0</b-button>
+						<b-button href="#" variant="primary" @click="addThumb(post.id, 1)"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> {{ post.likes }} </b-button>
+						<b-button href="#" variant="danger" class="m-1" @click="addThumb(post.id, -1)"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> {{ post.dislikes }}</b-button>
 					</b-col>
 				</b-row>
 
@@ -139,6 +139,28 @@ export default {
 					} else {
 						this.getPosts();
 					}
+				});
+		},
+
+		//Thumbs
+		addThumb(postId, thumb) {
+			const userId = this.$user.userId;
+			axios
+				.put(
+					`http://localhost:3000/api/thumbs/${postId}`,
+					{
+						userId,
+						thumb,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+				.then(() => {
+					this.getPosts();
 				});
 		},
 

@@ -6,6 +6,7 @@ USE groupomania;
 SET NAMES utf8;
 
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS thumbs;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 
@@ -36,6 +37,8 @@ CREATE TABLE `posts` (
   `userId` smallint UNSIGNED NOT NULL,
   `content` text NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp(),
+  `likes` smallint UNSIGNED NOT NULL DEFAULT 0,
+  `dislikes` smallint UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -54,6 +57,21 @@ CREATE TABLE `comments` (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `thumbs`
+--
+
+CREATE TABLE `thumbs` (
+  `id` smallint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `userId` SMALLINT UNSIGNED NOT NULL,
+  `postId` smallint UNSIGNED NOT NULL,
+  `liked` tinyint UNSIGNED DEFAULT 0,
+  `disliked` tinyint UNSIGNED DEFAULT 0,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Contraintes pour la table `posts`
 --
@@ -66,3 +84,9 @@ ALTER TABLE `comments`
   ADD CONSTRAINT `fk_postId_comments` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_userId_comments` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Contraintes pour la table `thumbs`
+--
+ALTER TABLE `thumbs`
+  ADD CONSTRAINT `fk_postId_thumbs` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_userId_thumbs` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;

@@ -9,5 +9,7 @@ const router = express.Router();
 
 // Route PUT - Create thumb
 router.put("/:id", auth, thumbCtrl.createThumb);
+// Routes PUT - Delete Thumb
+router.put("/:id/delete-thumb", auth, thumbCtrl.deleteThumb);
 
 module.exports = router;

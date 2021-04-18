@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<article v-for="post in posts" :key="post.id">
-			<b-card class="mb-3">
+			<b-card class="mb-3" :liked="liked" :disliked="disliked">
 				<div class="text-left offset-1">
 					<b-avatar class="" href="#bar" src="https://placekitten.com/300/300"></b-avatar>
 					<span> {{ post.prenom }} {{ post.nom }}</span>
@@ -36,9 +36,17 @@
 							<span class="pl-1" v-if="post.comments.length > 0"> {{ post.comments.length }}</span>
 						</b-button>
 					</b-col>
-					<b-col cols="6" class="text-right">
+					<b-col cols="6" class="text-right" v-if="post.disliked != 1 && post.liked != 1">
 						<b-button href="#" variant="primary" @click="addThumb(post.id, 1)"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> {{ post.likes }} </b-button>
 						<b-button href="#" variant="danger" class="m-1" @click="addThumb(post.id, -1)"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> {{ post.dislikes }}</b-button>
+					</b-col>
+					<b-col cols="6" class="text-right" v-if="post.liked == 1">
+						<b-button href="#" variant="primary" @click="deleteThumb(post.id, -1)"><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> {{ post.likes }}</b-button>
+						<b-button href="#" variant="danger" class="m-1" disabled><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> {{ post.dislikes }}</b-button>
+					</b-col>
+					<b-col cols="6" class="text-right" v-if="post.disliked == 1">
+						<b-button href="#" variant="primary" disabled><b-icon icon="hand-thumbs-up" aria-label="Like"></b-icon> {{ post.likes }}</b-button>
+						<b-button href="#" variant="danger" class="m-1" @click="deleteThumb(post.id, 1)"><b-icon icon="hand-thumbs-down" aria-label="Dislike"></b-icon> {{ post.dislikes }}</b-button>
 					</b-col>
 				</b-row>
 
@@ -113,6 +121,8 @@ export default {
 
 	data() {
 		return {
+			liked: false,
+			disliked: false,
 			commentContent: "",
 		};
 	},
@@ -148,6 +158,26 @@ export default {
 			axios
 				.put(
 					`http://localhost:3000/api/thumbs/${postId}`,
+					{
+						userId,
+						thumb,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					}
+				)
+				.then(() => {
+					this.getPosts();
+				});
+		},
+		deleteThumb(postId, thumb) {
+			const userId = this.$user.userId;
+			axios
+				.put(
+					`http://localhost:3000/api/thumbs/${postId}/delete-thumb`,
 					{
 						userId,
 						thumb,

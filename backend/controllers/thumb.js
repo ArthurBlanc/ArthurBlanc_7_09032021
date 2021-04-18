@@ -23,3 +23,25 @@ exports.createThumb = (req, res, next) => {
 		});
 	}
 };
+// Routes PUT - Delete Thumb
+exports.deleteThumb = (req, res, next) => {
+	let postId = req.params.id;
+	let userId = req.body.userId;
+	if (req.body.thumb == -1) {
+		sql.query("DELETE FROM Thumbs WHERE userId = ? AND postId = ?", [userId, postId], (error, results, fields) => {
+			if (error) throw error;
+			sql.query("UPDATE posts SET likes = likes - 1 WHERE id = ?", [postId], (error, results, fields) => {
+				if (error) throw error;
+			});
+			return res.status(200).json(results);
+		});
+	} else if (req.body.thumb == 1) {
+		sql.query("DELETE FROM Thumbs WHERE userId = ? AND postId = ?", [userId, postId], (error, results, fields) => {
+			if (error) throw error;
+			sql.query("UPDATE posts SET dislikes = dislikes - 1 WHERE id = ?", [postId], (error, results, fields) => {
+				if (error) throw error;
+			});
+			return res.status(200).json(results);
+		});
+	}
+};

@@ -33,8 +33,7 @@
 							</b-modal>
 						</div>
 						<Post :getPosts="this.getAllPosts" :posts="posts" />
-						<PostMedia />
-						<PostMedia />
+						<PostMedia :getPosts="this.getAllPosts" :posts="posts" />
 					</b-col>
 				</b-row>
 			</b-container>

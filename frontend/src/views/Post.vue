@@ -9,11 +9,17 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<OnePost :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
+						<OnePostMedia :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
 						<div v-if="modify">
 							<b-form>
 								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" required></b-form-textarea>
 
-								<b-button variant="primary" type="submit" @click="modifyOnePost(), (modify = false)">Publier les modifications</b-button>
+								<div>
+									<b-button class="mt-3" variant="primary" type="submit" @click="modifyOnePost(), (modify = false)">Publier les modifications</b-button>
+								</div>
+								<div>
+									<b-button class="mt-3" variant="danger" v-if="modify" @click="modify = false">Annuler les modifications</b-button>
+								</div>
 							</b-form>
 						</div>
 
@@ -28,11 +34,13 @@
 <script>
 import axios from "axios";
 import OnePost from "@/components/Post.vue";
+import OnePostMedia from "@/components/PostMedia.vue";
 
 export default {
 	name: "Post",
 	components: {
 		OnePost,
+		OnePostMedia,
 	},
 
 	data() {

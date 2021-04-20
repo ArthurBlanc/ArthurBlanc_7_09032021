@@ -37,10 +37,18 @@ exports.getOnePost = (req, res, next) => {
 exports.modifyPost = (req, res, next) => {
 	let postContent = req.body.content;
 	let postId = req.params.id;
-	sql.query("UPDATE posts SET content = ? WHERE id = ?", [postContent, postId], (error, results, fields) => {
-		if (error) throw error;
-		return res.status(200).json(results);
-	});
+	let imageURL = req.file ? req.file.filename : null;
+	if (imageURL === null) {
+		sql.query("UPDATE posts SET content = ? WHERE id = ?", [postContent, postId], (error, results, fields) => {
+			if (error) throw error;
+			return res.status(200).json(results);
+		});
+	} else {
+		sql.query("UPDATE posts SET content = ?, image = ? WHERE id = ?", [postContent, imageURL, postId], (error, results, fields) => {
+			if (error) throw error;
+			return res.status(200).json(results);
+		});
+	}
 };
 // Route DELETE - Delete one post
 exports.deletePost = (req, res, next) => {

@@ -12,6 +12,15 @@
 						<OnePostMedia :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
 						<div v-if="modify">
 							<b-form>
+								<b-form-file
+									v-if="post.postImage != null"
+									placeholder="Choisissez ou glissez votre fichier ici..."
+									drop-placeholder="Glissez votre fichier ici..."
+									accept="image/jpeg, image/png, image/gif"
+									browse-text="Choisir"
+									class="text-left"
+									@change="onFileUpload"
+								></b-form-file>
 								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" required></b-form-textarea>
 
 								<div>
@@ -52,6 +61,7 @@ export default {
 			posts: [],
 			post: [],
 			connected: false,
+			FILE: null,
 		};
 	},
 
@@ -97,23 +107,26 @@ export default {
 				});
 		},
 
+		onFileUpload(event) {
+			this.FILE = event.target.files[0];
+		},
+
 		modifyOnePost() {
 			const postId = this.$route.params.id;
 			const content = document.querySelector("#modify-content").value;
+			const formData = new FormData();
+			formData.append("postId", this.$user.userId);
+			formData.append("content", content);
+			if (this.FILE != null) {
+				formData.append("image", this.FILE, this.FILE.name);
+			}
 			axios
-				.put(
-					`http://localhost:3000/api/posts/${postId}`,
-					{
-						postId,
-						content,
+				.put(`http://localhost:3000/api/posts/${postId}`, formData, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.$token}`,
 					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${this.$token}`,
-						},
-					}
-				)
+				})
 
 				.then(() => {
 					this.getOnePost();

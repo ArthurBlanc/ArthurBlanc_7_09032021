@@ -16,7 +16,7 @@ router.get("/", auth, postCtrl.getAllPosts);
 // Route GET - Get one post
 router.get("/:id", auth, postCtrl.getOnePost);
 // Route PUT - Modify one post
-router.put("/:id", auth, postCtrl.modifyPost);
+router.put("/:id", auth, multer, postCtrl.modifyPost);
 // Route DELETE - Delete one post
 router.delete("/:id", auth, postCtrl.deletePost);
 

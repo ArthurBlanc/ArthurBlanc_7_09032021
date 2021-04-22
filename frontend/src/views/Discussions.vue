@@ -20,7 +20,7 @@
 								</div>
 							</b-modal>
 						</div>
-						<Post :getPosts="this.getAllPosts" :posts="posts" />
+						<Post :getPosts="getAllCategoryPosts" :posts="posts" />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -51,12 +51,14 @@ export default {
 		onSubmit() {
 			let userId = this.$user.userId;
 			let content = this.content;
+			let categoryId = 1;
 			axios
 				.post(
 					`http://localhost:3000/api/posts/`,
 					{
 						userId,
 						content,
+						categoryId,
 					},
 					{
 						headers: {
@@ -68,16 +70,17 @@ export default {
 				.then(
 					this.toggleModal(),
 					setTimeout(() => {
-						(this.content = ""), this.getAllPosts();
+						(this.content = ""), this.getAllCategoryPosts();
 					}, 200)
 				);
 		},
 		toggleModal() {
 			this.$refs["post-modal"].toggle("#toggle-post-modal");
 		},
-		getAllPosts() {
+		getAllCategoryPosts() {
+			const categoryId = 1;
 			axios
-				.get(`http://localhost:3000/api/posts/`, {
+				.get(`http://localhost:3000/api/posts/category/${categoryId}`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.$token}`,
@@ -120,7 +123,7 @@ export default {
 
 	mounted() {
 		if (localStorage.user != undefined) {
-			this.getAllPosts();
+			this.getAllCategoryPosts();
 		}
 	},
 };

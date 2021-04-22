@@ -13,6 +13,8 @@ const router = express.Router();
 router.post("/", auth, multer, postCtrl.createPost);
 // Route GET - Get all the posts
 router.get("/", auth, postCtrl.getAllPosts);
+// Route GET - Get all the posts from a category
+router.get("/category/:categoryId", auth, postCtrl.getAllCategoryPosts);
 // Route GET - Get one post
 router.get("/:id", auth, postCtrl.getOnePost);
 // Route PUT - Modify one post

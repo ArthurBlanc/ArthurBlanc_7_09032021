@@ -31,7 +31,7 @@
 								</div>
 							</b-modal>
 						</div>
-						<PostMedia :getPosts="this.getAllPosts" :posts="posts" />
+						<PostMedia :getPosts="getAllCategoryPosts" :posts="posts" />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -66,6 +66,7 @@ export default {
 			formData.append("userId", this.$user.userId);
 			formData.append("content", this.content);
 			formData.append("image", this.FILE, this.FILE.name);
+			formData.append("categoryId", 2);
 			axios
 				.post(`http://localhost:3000/api/posts/`, formData, {
 					headers: {
@@ -76,16 +77,17 @@ export default {
 				.then(
 					this.toggleModal(),
 					setTimeout(() => {
-						(this.content = ""), (this.FILE = null), this.getAllPosts();
+						(this.content = ""), (this.FILE = null), this.getAllCategoryPosts();
 					}, 200)
 				);
 		},
 		toggleModal() {
 			this.$refs["post-modal"].toggle("#toggle-post-modal");
 		},
-		getAllPosts() {
+		getAllCategoryPosts() {
+			const categoryId = 2;
 			axios
-				.get(`http://localhost:3000/api/posts/`, {
+				.get(`http://localhost:3000/api/posts/category/${categoryId}`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.$token}`,
@@ -131,7 +133,7 @@ export default {
 
 	mounted() {
 		if (localStorage.user != undefined) {
-			this.getAllPosts();
+			this.getAllCategoryPosts();
 		}
 	},
 };

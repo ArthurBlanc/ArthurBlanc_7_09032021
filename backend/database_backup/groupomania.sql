@@ -38,6 +38,7 @@ CREATE TABLE `posts` (
   `content` text NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp(),
   `image` varchar(256),
+  `categoryId` smallint UNSIGNED NOT NULL,
   `likes` smallint UNSIGNED NOT NULL DEFAULT 0,
   `dislikes` smallint UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id)

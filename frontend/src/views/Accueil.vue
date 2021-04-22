@@ -11,25 +11,27 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<div class="mb-3">
-							<b-button id="show-btn" variant="primary" block @click="showModal">Créer une publication</b-button>
+							<b-button id="toggle-post-modal" variant="primary" block @click="toggleModal">Créer une discussion ou partager une image</b-button>
 
-							<b-modal ref="my-modal" hide-footer title="Créer une publication">
+							<b-modal ref="post-modal" hide-footer title="Créer une discussion ou partager une image">
 								<div class="d-block text-center">
-									<b-form-file
-										v-model="file1"
-										:state="Boolean(file1)"
-										placeholder="Choisissez ou glissez votre fichier ici..."
-										drop-placeholder="Glissez votre fichier ici..."
-										accept="image/jpeg, image/png, image/gif"
-										browse-text="Choisir"
-										class="text-left"
-									></b-form-file>
-									<b-form-textarea id="textarea" v-model="text" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6"></b-form-textarea>
-									<b-form @submit="onSubmit" v-if="show">
-										<pre class="mb-0">{{ text }}</pre>
+									<b-form @submit.prevent="onSubmit()">
+										<b-form-file
+											placeholder="Choisissez ou glissez votre fichier ici..."
+											drop-placeholder="Glissez votre fichier ici..."
+											accept="image/jpeg, image/png, image/gif"
+											browse-text="Choisir"
+											class="text-left"
+											@change="onFileUpload"
+										></b-form-file>
+
+										<b-form-textarea id="textarea" v-model="content" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6"></b-form-textarea>
+
+										<b-alert class="mt-3" show variant="danger" v-if="message != ''">{{ message }}</b-alert>
+
+										<b-button class="mt-3" variant="primary" type="submit" block>Publier</b-button>
 									</b-form>
 								</div>
-								<b-button class="mt-3" type="submit" variant="primary" block @click="hideModal">Publier</b-button>
 							</b-modal>
 						</div>
 						<Post :getPosts="this.getAllPosts" :posts="posts" />
@@ -54,28 +56,52 @@ export default {
 	},
 	data() {
 		return {
+			message: "",
 			text: "",
 			file1: null,
 			show: true,
 			connected: false,
 			posts: [],
+			content: "",
+			FILE: null,
 		};
 	},
 	methods: {
-		onSubmit(event) {
-			event.preventDefault();
-			alert(JSON.stringify(this.form));
-		},
-		showModal() {
-			this.$refs["my-modal"].show();
-		},
-		hideModal() {
-			this.$refs["my-modal"].hide();
-		},
 		toggleModal() {
-			// We pass the ID of the button that we want to return focus to
-			// when the modal has hidden
-			this.$refs["my-modal"].toggle("#toggle-btn");
+			this.$refs["post-modal"].toggle("#toggle-post-modal");
+		},
+
+		// Form
+		onSubmit() {
+			const formData = new FormData();
+			formData.append("userId", this.$user.userId);
+			formData.append("content", this.content);
+			if (this.FILE != null) {
+				formData.append("categoryId", 2);
+				formData.append("image", this.FILE, this.FILE.name);
+			} else {
+				formData.append("categoryId", 1);
+			}
+			if (this.FILE === null && this.content === "") {
+				this.message = "Les deux champs ne peuvent etre vide";
+			} else {
+				axios
+					.post(`http://localhost:3000/api/posts/`, formData, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					})
+					.then(
+						this.toggleModal(),
+						setTimeout(() => {
+							(this.content = ""), (this.FILE = null), this.getAllPosts();
+						}, 200)
+					);
+			}
+		},
+		onFileUpload(event) {
+			this.FILE = event.target.files[0];
 		},
 		getAllPosts() {
 			axios

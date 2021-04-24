@@ -9,7 +9,6 @@
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
 						<OnePost :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
-						<OnePostMedia :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
 						<div v-if="modify">
 							<b-form>
 								<b-form-file
@@ -43,13 +42,14 @@
 <script>
 import axios from "axios";
 import OnePost from "@/components/Post.vue";
-import OnePostMedia from "@/components/PostMedia.vue";
+import checkConnected from "@/mixins/checkConnected";
+import onFileUpload from "@/mixins/onFileUpload";
 
 export default {
 	name: "Post",
+	mixins: [checkConnected, onFileUpload],
 	components: {
 		OnePost,
-		OnePostMedia,
 	},
 
 	data() {
@@ -60,8 +60,6 @@ export default {
 
 			posts: [],
 			post: [],
-			connected: false,
-			FILE: null,
 		};
 	},
 
@@ -107,10 +105,6 @@ export default {
 				});
 		},
 
-		onFileUpload(event) {
-			this.FILE = event.target.files[0];
-		},
-
 		modifyOnePost() {
 			const postId = this.$route.params.id;
 			const content = document.querySelector("#modify-content").value;
@@ -132,24 +126,6 @@ export default {
 					this.getOnePost();
 				});
 		},
-
-		checkConnected() {
-			if (localStorage.user == undefined) {
-				this.$router.replace("/login");
-				this.connected = false;
-			} else if (localStorage.user !== undefined) {
-				this.connected = true;
-			}
-		},
-	},
-	created() {
-		this.checkConnected();
-	},
-
-	mounted() {
-		if (localStorage.user != undefined) {
-			this.getOnePost();
-		}
 	},
 };
 </script>

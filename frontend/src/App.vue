@@ -44,18 +44,4 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-
-#nav {
-	padding: 30px;
-	background: grey;
-
-	a {
-		font-weight: bold;
-		color: white;
-
-		&.router-link-exact-active {
-			color: blueviolet;
-		}
-	}
-}
 </style>

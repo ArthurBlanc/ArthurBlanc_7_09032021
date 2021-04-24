@@ -8,30 +8,7 @@
 			<b-container>
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
-						<div class="mb-3">
-							<b-button v-if="$route.name != 'Post'" id="toggle-post-modal" variant="primary" block @click="toggleModal">Partager une image</b-button>
-
-							<b-modal ref="post-modal" hide-footer title="Partager une image">
-								<div class="d-block text-center">
-									<b-form @submit.prevent="onSubmit()">
-										<b-form-file
-											placeholder="Choisissez ou glissez votre fichier ici..."
-											drop-placeholder="Glissez votre fichier ici..."
-											accept="image/jpeg, image/png, image/gif"
-											browse-text="Choisir"
-											class="text-left"
-											@change="onFileUpload"
-											required
-										></b-form-file>
-
-										<b-form-textarea id="textarea" v-model="content" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6"></b-form-textarea>
-
-										<b-button class="mt-3" variant="primary" type="submit" block>Publier</b-button>
-									</b-form>
-								</div>
-							</b-modal>
-						</div>
-						<PostMedia :getPosts="getAllCategoryPosts" :posts="posts" />
+						<Post :getPosts="this.getAllCategoryPosts" :posts="posts" :postButton="'Partager une image'" :imageRequired="true" :textRequired="false" />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -41,49 +18,23 @@
 
 <script>
 import axios from "axios";
-import PostMedia from "@/components/PostMedia.vue";
+import Post from "@/components/Post.vue";
+import checkConnected from "@/mixins/checkConnected";
 
 export default {
 	name: "Medias",
+	mixins: [checkConnected],
 	components: {
-		PostMedia,
+		Post,
 	},
+
 	data() {
 		return {
-			text: "",
-			file1: null,
-			show: true,
-			connected: false,
 			posts: [],
-			content: "",
-			FILE: null,
 		};
 	},
+
 	methods: {
-		// Form
-		onSubmit() {
-			const formData = new FormData();
-			formData.append("userId", this.$user.userId);
-			formData.append("content", this.content);
-			formData.append("image", this.FILE, this.FILE.name);
-			formData.append("categoryId", 2);
-			axios
-				.post(`http://localhost:3000/api/posts/`, formData, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${this.$token}`,
-					},
-				})
-				.then(
-					this.toggleModal(),
-					setTimeout(() => {
-						(this.content = ""), (this.FILE = null), this.getAllCategoryPosts();
-					}, 200)
-				);
-		},
-		toggleModal() {
-			this.$refs["post-modal"].toggle("#toggle-post-modal");
-		},
 		getAllCategoryPosts() {
 			const categoryId = 2;
 			axios
@@ -115,26 +66,6 @@ export default {
 					});
 				});
 		},
-		onFileUpload(event) {
-			this.FILE = event.target.files[0];
-		},
-		checkConnected() {
-			if (localStorage.user == undefined) {
-				this.$router.replace("/login");
-				this.connected = false;
-			} else if (localStorage.user !== undefined) {
-				this.connected = true;
-			}
-		},
-	},
-	created() {
-		this.checkConnected();
-	},
-
-	mounted() {
-		if (localStorage.user != undefined) {
-			this.getAllCategoryPosts();
-		}
 	},
 };
 </script>

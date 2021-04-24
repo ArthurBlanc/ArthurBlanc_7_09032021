@@ -2,7 +2,7 @@
 	<header>
 		<div>
 			<b-navbar toggleable="lg" type="light" variant="light">
-				<b-navbar-brand href="/"><img src="/images/icon-left-font-monochrome-black.png" height="25" alt="Logo Groupomania"/></b-navbar-brand>
+				<b-navbar-brand to="/"><img src="/images/icon-left-font-monochrome-black.png" height="25" alt="Logo Groupomania"/></b-navbar-brand>
 
 				<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -27,51 +27,17 @@
 </template>
 
 <script>
+import checkConnected from "@/mixins/checkConnected";
+
 export default {
 	name: "navBar",
-
-	data() {
-		return {
-			connected: false,
-		};
-	},
+	mixins: [checkConnected],
 
 	methods: {
-		checkConnected() {
-			if (localStorage.user == undefined || this.$route.name == "Login") {
-				if (this.$route.name != "Login") {
-					this.$router.replace("/login");
-				}
-				this.connected = false;
-			} else if (localStorage.user !== undefined) {
-				this.connected = true;
-			}
-		},
 		disconnect() {
 			localStorage.removeItem("user");
 			location.href = "/";
 		},
 	},
-	created() {
-		this.checkConnected();
-	},
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-	margin: 40px 0 0;
-}
-ul {
-	list-style-type: none;
-	padding: 0;
-}
-li {
-	display: inline-block;
-	margin: 0 10px;
-}
-a {
-	color: #42b983;
-}
-</style>

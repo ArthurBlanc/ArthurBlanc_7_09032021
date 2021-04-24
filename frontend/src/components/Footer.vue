@@ -28,9 +28,3 @@ export default {
 	name: "Footer",
 };
 </script>
-
-<style scoped lang="scss">
-footer {
-	flex-shrink: 0;
-}
-</style>

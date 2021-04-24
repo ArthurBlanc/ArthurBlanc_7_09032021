@@ -7,20 +7,7 @@
 			<b-container>
 				<b-row>
 					<b-col md="8" offset-md="2" v-if="connected">
-						<div class="mb-3">
-							<b-button variant="primary" block @click="toggleModal">Créer une discussion</b-button>
-
-							<b-modal ref="post-modal" hide-footer title="Créer une discussion">
-								<div class="d-block text-center">
-									<b-form @submit.prevent="onSubmit()">
-										<b-form-textarea id="textarea" v-model="content" placeholder="Que voulez-vous dire ?" rows="3" max-rows="6" required></b-form-textarea>
-
-										<b-button class="mt-3" variant="primary" type="submit" block>Publier</b-button>
-									</b-form>
-								</div>
-							</b-modal>
-						</div>
-						<Post :getPosts="getAllCategoryPosts" :posts="posts" />
+						<Post :getPosts="getAllCategoryPosts" :posts="posts" :postButton="'Créer une discussion'" :textRequired="true" />
 					</b-col>
 				</b-row>
 			</b-container>
@@ -31,52 +18,22 @@
 <script>
 import axios from "axios";
 import Post from "@/components/Post.vue";
+import checkConnected from "@/mixins/checkConnected";
 
 export default {
 	name: "Discussions",
+	mixins: [checkConnected],
 	components: {
 		Post,
 	},
+
 	data() {
 		return {
-			text: "",
-			show: true,
-			connected: false,
-			content: "",
 			posts: [],
 		};
 	},
+
 	methods: {
-		// Form
-		onSubmit() {
-			let userId = this.$user.userId;
-			let content = this.content;
-			let categoryId = 1;
-			axios
-				.post(
-					`http://localhost:3000/api/posts/`,
-					{
-						userId,
-						content,
-						categoryId,
-					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${this.$token}`,
-						},
-					}
-				)
-				.then(
-					this.toggleModal(),
-					setTimeout(() => {
-						(this.content = ""), this.getAllCategoryPosts();
-					}, 200)
-				);
-		},
-		toggleModal() {
-			this.$refs["post-modal"].toggle("#toggle-post-modal");
-		},
 		getAllCategoryPosts() {
 			const categoryId = 1;
 			axios
@@ -108,23 +65,6 @@ export default {
 					});
 				});
 		},
-		checkConnected() {
-			if (localStorage.user == undefined) {
-				this.$router.replace("/login");
-				this.connected = false;
-			} else if (localStorage.user !== undefined) {
-				this.connected = true;
-			}
-		},
-	},
-	created() {
-		this.checkConnected();
-	},
-
-	mounted() {
-		if (localStorage.user != undefined) {
-			this.getAllCategoryPosts();
-		}
 	},
 };
 </script>

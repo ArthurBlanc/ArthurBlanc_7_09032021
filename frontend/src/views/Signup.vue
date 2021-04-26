@@ -48,6 +48,17 @@
 									<small tabindex="-1" class="form-text text-muted">Il doit contenir au moins 8 caractères dont au moins une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
 								</b-form-row>
 
+								<b-form-group id="input-group-avatar" label="Avatar : (optionnel)" label-for="signup-avatar" class="mt-3">
+									<b-form-file
+										placeholder="Choisissez ou glissez votre fichier ici..."
+										drop-placeholder="Glissez votre fichier ici..."
+										accept="image/jpeg, image/png, image/gif"
+										browse-text="Choisir"
+										class="text-left"
+										@change="onFileUpload"
+									></b-form-file>
+								</b-form-group>
+
 								<b-alert show variant="danger" v-if="message != ''">{{ message }}</b-alert>
 
 								<b-button type="submit" variant="primary" class="mb-3">S'inscrire</b-button>
@@ -62,9 +73,11 @@
 
 <script>
 import axios from "axios";
+import onFileUpload from "@/mixins/onFileUpload";
 
 export default {
 	name: "Signup",
+	mixins: [onFileUpload],
 
 	data() {
 		return {
@@ -85,22 +98,21 @@ export default {
 			let email = this.form.email;
 			let password = this.form.password;
 			const passwordCheck = this.form.passwordCheck;
+			const formData = new FormData();
+			formData.append("prenom", prenom);
+			formData.append("nom", nom);
+			formData.append("email", email);
+			formData.append("password", password);
+			if (this.FILE != null) {
+				formData.append("image", this.FILE, this.FILE.name);
+			}
 			if (password === passwordCheck) {
 				axios
-					.post(
-						`http://localhost:3000/api/auth/signup`,
-						{
-							prenom,
-							nom,
-							email,
-							password,
+					.post(`http://localhost:3000/api/auth/signup`, formData, {
+						headers: {
+							"Content-Type": "application/json",
 						},
-						{
-							headers: {
-								"Content-Type": "application/json",
-							},
-						}
-					)
+					})
 					.then((res) => {
 						if (res.status === 201) {
 							location.href = "/";

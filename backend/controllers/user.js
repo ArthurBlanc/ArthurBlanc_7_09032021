@@ -10,6 +10,8 @@ const CryptoJS = require("crypto-js");
 const dotenv = require("dotenv").config();
 // Import "validator" package - String validation and sanitization
 const validator = require("validator");
+// Import "FS" package - File management
+const fs = require("fs");
 
 // Import key and iv form .env
 const key = CryptoJS.enc.Hex.parse(`${process.env.CRYPTOJS_SECRET_KEY}`);
@@ -43,7 +45,8 @@ exports.signup = (req, res, next) => {
 				let prenom = req.body.prenom;
 				let nom = req.body.nom;
 				let password = hash;
-				sql.query("INSERT INTO users VALUES (NULL, ?, ?, ?, ?, 0)", [prenom, nom, cryptedEmail, password], (error, results, fields) => {
+				let imageURL = req.file ? req.file.filename : "default-pp.jpg";
+				sql.query("INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, 0)", [prenom, nom, cryptedEmail, password, imageURL], (error, results, fields) => {
 					if (error) throw error;
 					return res.status(201).json({ message: "Votre compte a été créé !" });
 				});
@@ -89,8 +92,21 @@ exports.login = (req, res, next) => {
 exports.modifyUser = (req, res, next) => {
 	let prenom = req.body.prenom;
 	let nom = req.body.nom;
+	let image = "";
 	let userId = req.params.id;
-	sql.query("UPDATE users SET prenom = ?, nom = ? WHERE id = ?", [prenom, nom, userId], (error, results, fields) => {
+	let imageURL = req.file ? req.file.filename : null;
+	if (req.file) {
+		image = "image =" + sql.escape(req.file.filename) + ", ";
+	}
+	if (imageURL != null) {
+		sql.query("SELECT image FROM users WHERE id = ?", [userId], (error, results, fields) => {
+			if (error) throw error;
+			if (results[0].image != null && results[0].image != "default-pp.jpg") {
+				fs.unlinkSync(`../frontend/public//images/uploads/${results[0].image}`);
+			}
+		});
+	}
+	sql.query(`UPDATE users SET ${image} prenom = ?, nom = ? WHERE id = ?`, [prenom, nom, userId], (error, results, fields) => {
 		if (error) throw error;
 		return res.status(200).json(results);
 	});
@@ -98,8 +114,14 @@ exports.modifyUser = (req, res, next) => {
 // Route DELETE - Delete one user
 exports.deleteUser = (req, res, next) => {
 	let userId = req.params.id;
-	sql.query("DELETE FROM users WHERE id = ?", [userId], (error, results, fields) => {
+	sql.query("SELECT image FROM users WHERE id = ?", [userId], (error, results, fields) => {
 		if (error) throw error;
-		return res.status(200).json(results);
+		if (results[0].image != "default-pp.jpg") {
+			fs.unlinkSync(`../frontend/public/images/uploads/${results[0].image}`);
+		}
+		sql.query("DELETE FROM users WHERE id = ?", [userId], (error, results, fields) => {
+			if (error) throw error;
+			return res.status(200).json(results);
+		});
 	});
 };

@@ -22,6 +22,7 @@ CREATE TABLE `users` (
   `nom` varchar(128) NOT NULL,
   `email` varchar(128) UNIQUE NOT NULL,
   `password` varchar(64) NOT NULL,
+  `image` varchar(256) NOT NULL DEFAULT 'default-pp.jpg',
   `admin` tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -30,6 +30,17 @@
 									</div>
 								</b-form-row>
 
+								<b-form-group id="input-group-avatar" label="Avatar : (optionnel)" label-for="signup-avatar" class="mt-3">
+									<b-form-file
+										placeholder="Choisissez ou glissez votre fichier ici... (optionnel)"
+										drop-placeholder="Glissez votre fichier ici... (optionnel)"
+										accept="image/jpeg, image/png, image/gif"
+										browse-text="Choisir"
+										class="text-left"
+										@change="onFileUpload"
+									></b-form-file>
+								</b-form-group>
+
 								<b-button type="submit" variant="primary" class="mb-3">Publier les modifications</b-button>
 							</b-form>
 
@@ -68,9 +79,11 @@
 
 <script>
 import axios from "axios";
+import onFileUpload from "@/mixins/onFileUpload";
 
 export default {
 	name: "Profil",
+	mixins: [onFileUpload],
 
 	data() {
 		return {
@@ -105,20 +118,19 @@ export default {
 			let nom = this.form.nom;
 			let email = this.$user.email;
 			let admin = this.$user.admin;
+			const formData = new FormData();
+			formData.append("prenom", prenom);
+			formData.append("nom", nom);
+			if (this.FILE != null) {
+				formData.append("image", this.FILE, this.FILE.name);
+			}
 			axios
-				.put(
-					`http://localhost:3000/api/auth/modify_user/${userId}`,
-					{
-						prenom,
-						nom,
+				.put(`http://localhost:3000/api/auth/modify_user/${userId}`, formData, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.$token}`,
 					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${this.$token}`,
-						},
-					}
-				)
+				})
 				.then(() => {
 					let user = JSON.parse(localStorage.getItem("user"));
 					const token = user.token;

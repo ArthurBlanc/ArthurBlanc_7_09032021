@@ -31,7 +31,7 @@
 			<img v-if="post.postImage != null" :src="'/images/uploads/' + post.postImage" alt="Image" class="card-img" />
 			<b-card class="mb-3" :liked="liked" :disliked="disliked">
 				<div class="text-left offset-1">
-					<b-avatar src="https://placekitten.com/300/300"></b-avatar>
+					<b-avatar :src="'/images/uploads/' + post.userImage"></b-avatar>
 					<span> {{ post.prenom }} {{ post.nom }}</span>
 					<span class="post-date"> - publié le {{ dateFormat(post.date) }}</span>
 					<b-button variant="outline-danger" class="float-right btn-sm" v-if="post.userId == $user.userId || $user.admin == 1" @click="$bvModal.show('delete-post-' + post.id)">
@@ -84,7 +84,7 @@
 						<div class="text-left">
 							<b-row>
 								<b-col lg="1" cols="2" class="pr-0">
-									<b-avatar src="https://placekitten.com/300/300"></b-avatar>
+									<b-avatar :src="'/images/uploads/' + post.userImage"></b-avatar>
 								</b-col>
 								<b-col lg="11" cols="10">
 									<b-form @submit.prevent="createComment(post.id)">
@@ -116,7 +116,7 @@
 									</template>
 								</b-modal>
 
-								<b-avatar src="https://placekitten.com/300/300"></b-avatar>
+								<b-avatar :src="'/images/uploads/' + comment.image"></b-avatar>
 								<span> {{ comment.prenom }} {{ comment.nom }}</span>
 								<span class="post-date"> - publié le {{ dateFormat(comment.date) }}</span>
 								<b-card-text class="text-justify mt-3">{{ comment.content }}</b-card-text>

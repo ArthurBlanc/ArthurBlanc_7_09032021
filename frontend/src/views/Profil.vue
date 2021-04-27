@@ -20,12 +20,12 @@
 								<b-form-row>
 									<div class="col">
 										<b-form-group id="input-group-prenom" :label="'Prenom actuel : ' + this.$user.prenom" label-for="signup-prenom">
-											<b-form-input id="signup-prenom" v-model="form.prenom" type="text" placeholder="Entrez votre prenom" required></b-form-input>
+											<b-form-input id="signup-prenom" v-model="form.prenom" type="text" placeholder="Entrez votre prenom"></b-form-input>
 										</b-form-group>
 									</div>
 									<div class="col">
 										<b-form-group id="input-group-nom" :label="'Nom actuel : ' + this.$user.nom" label-for="signup-nom">
-											<b-form-input id="signup-nom" v-model="form.nom" type="text" placeholder="Entrez votre nom" required></b-form-input>
+											<b-form-input id="signup-nom" v-model="form.nom" type="text" placeholder="Entrez votre nom"></b-form-input>
 										</b-form-group>
 									</div>
 								</b-form-row>
@@ -40,6 +40,12 @@
 										@change="onFileUpload"
 									></b-form-file>
 								</b-form-group>
+
+								<b-form-group id="input-group-admin" label="Code admin : (optionnel)" label-for="signup-admin" description="Si vous etes administrateur, veuillez entrez votre code admin">
+									<b-form-input id="signup-admin" v-model="form.admin" type="text" placeholder="Entrez votre code admin (optionnel)"></b-form-input>
+								</b-form-group>
+
+								<b-alert show variant="danger" v-if="message != ''">{{ message }}</b-alert>
 
 								<b-button type="submit" variant="primary" class="mb-3">Publier les modifications</b-button>
 							</b-form>
@@ -87,11 +93,13 @@ export default {
 
 	data() {
 		return {
+			message: "",
 			connected: false,
 			modify: false,
 			form: {
 				prenom: "",
 				nom: "",
+				admin: "",
 			},
 		};
 	},
@@ -117,26 +125,52 @@ export default {
 			let prenom = this.form.prenom;
 			let nom = this.form.nom;
 			let email = this.$user.email;
-			let admin = this.$user.admin;
+			let admin = this.form.admin;
+			let checkAdmin = false;
 			const formData = new FormData();
-			formData.append("prenom", prenom);
-			formData.append("nom", nom);
+			if (prenom === undefined || prenom.length === 0) {
+				prenom = this.$user.prenom;
+			} else {
+				formData.append("prenom", prenom);
+			}
+			if (nom === undefined || nom.length === 0) {
+				nom = this.$user.nom;
+			} else {
+				formData.append("nom", nom);
+			}
 			if (this.FILE != null) {
 				formData.append("image", this.FILE, this.FILE.name);
 			}
-			axios
-				.put(`http://localhost:3000/api/auth/modify_user/${userId}`, formData, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${this.$token}`,
-					},
-				})
-				.then(() => {
-					let user = JSON.parse(localStorage.getItem("user"));
-					const token = user.token;
-					localStorage.setItem("user", JSON.stringify({ userId: userId, nom: nom, prenom: prenom, admin: admin, token: token, email: email }));
-					location.reload();
-				});
+			if (admin === "admin") {
+				formData.append("admin", 1);
+				admin = 1;
+				checkAdmin = true;
+			} else if (admin === "0") {
+				formData.append("admin", 0);
+				admin = 0;
+				checkAdmin = true;
+			} else if (admin === undefined || admin.length === 0) {
+				formData.append("admin", this.$user.admin);
+				admin = this.$user.admin;
+				checkAdmin = true;
+			} else {
+				this.message = "Le code admin saisi est invalide";
+			}
+			if (checkAdmin === true) {
+				axios
+					.put(`http://localhost:3000/api/auth/modify_user/${userId}`, formData, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					})
+					.then(() => {
+						let user = JSON.parse(localStorage.getItem("user"));
+						const token = user.token;
+						localStorage.setItem("user", JSON.stringify({ userId: userId, nom: nom, prenom: prenom, admin: admin, token: token, email: email }));
+						location.reload();
+					});
+			}
 		},
 
 		checkConnected() {

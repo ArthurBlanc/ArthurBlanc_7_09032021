@@ -59,6 +59,10 @@
 									></b-form-file>
 								</b-form-group>
 
+								<b-form-group id="input-group-admin" label="Code admin : (optionnel)" label-for="signup-admin" description="Si vous etes administrateur, veuillez entrez votre code admin">
+									<b-form-input id="signup-admin" v-model="form.admin" type="text" placeholder="Entrez votre code admin"></b-form-input>
+								</b-form-group>
+
 								<b-alert show variant="danger" v-if="message != ''">{{ message }}</b-alert>
 
 								<b-button type="submit" variant="primary" class="mb-3">S'inscrire</b-button>
@@ -88,6 +92,7 @@ export default {
 				email: "",
 				password: "",
 				passwordCheck: "",
+				admin: "",
 			},
 		};
 	},
@@ -98,6 +103,8 @@ export default {
 			let email = this.form.email;
 			let password = this.form.password;
 			const passwordCheck = this.form.passwordCheck;
+			let admin = this.form.admin;
+			let checkAdmin = false;
 			const formData = new FormData();
 			formData.append("prenom", prenom);
 			formData.append("nom", nom);
@@ -106,7 +113,18 @@ export default {
 			if (this.FILE != null) {
 				formData.append("image", this.FILE, this.FILE.name);
 			}
-			if (password === passwordCheck) {
+			if (admin === "admin") {
+				formData.append("admin", 1);
+				admin = 1;
+				checkAdmin = true;
+			} else if (admin === undefined || admin.length === 0) {
+				formData.append("admin", 0);
+				admin = 0;
+				checkAdmin = true;
+			} else {
+				this.message = "Le code admin saisi est invalide";
+			}
+			if (password === passwordCheck && checkAdmin === true) {
 				axios
 					.post(`http://localhost:3000/api/auth/signup`, formData, {
 						headers: {

@@ -46,7 +46,8 @@ exports.signup = (req, res, next) => {
 				let nom = req.body.nom;
 				let password = hash;
 				let imageURL = req.file ? req.file.filename : "default-pp.jpg";
-				sql.query("INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, 0)", [prenom, nom, cryptedEmail, password, imageURL], (error, results, fields) => {
+				let admin = req.body.admin;
+				sql.query("INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, ?)", [prenom, nom, cryptedEmail, password, imageURL, admin], (error, results, fields) => {
 					if (error) throw error;
 					return res.status(201).json({ message: "Votre compte a été créé !" });
 				});
@@ -90,10 +91,17 @@ exports.login = (req, res, next) => {
 };
 // Route PUT - Modify one user
 exports.modifyUser = (req, res, next) => {
-	let prenom = req.body.prenom;
-	let nom = req.body.nom;
+	let prenom = "";
+	let nom = "";
 	let image = "";
+	let admin = req.body.admin;
 	let userId = req.params.id;
+	if (req.body.prenom) {
+		prenom = "prenom =" + sql.escape(req.body.prenom) + ", ";
+	}
+	if (req.body.nom) {
+		nom = "nom =" + sql.escape(req.body.nom) + ", ";
+	}
 	let imageURL = req.file ? req.file.filename : null;
 	if (req.file) {
 		image = "image =" + sql.escape(req.file.filename) + ", ";
@@ -106,7 +114,7 @@ exports.modifyUser = (req, res, next) => {
 			}
 		});
 	}
-	sql.query(`UPDATE users SET ${image} prenom = ?, nom = ? WHERE id = ?`, [prenom, nom, userId], (error, results, fields) => {
+	sql.query(`UPDATE users SET ${prenom} ${nom} ${image} admin = ? WHERE id = ?`, [admin, userId], (error, results, fields) => {
 		if (error) throw error;
 		return res.status(200).json(results);
 	});

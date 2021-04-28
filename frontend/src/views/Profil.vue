@@ -29,6 +29,23 @@
 										</b-form-group>
 									</div>
 								</b-form-row>
+								<b-form-group id="input-group-email" :label="'Email actuel : ' + this.$user.email" label-for="signup-email">
+									<b-form-input id="signup-email" v-model="form.email" type="email" placeholder="Entrez votre email (optionnel)"></b-form-input>
+								</b-form-group>
+								<b-form-row>
+									<div class="col">
+										<b-form-group id="input-group-password" label="Mot de passe :" label-for="signup-password">
+											<b-form-input id="signup-password" v-model="form.password" type="password" placeholder="Entrez votre mot de passe (optionnel)"></b-form-input>
+										</b-form-group>
+									</div>
+
+									<div class="col">
+										<b-form-group id="input-group-password-check" label="Vérification du mot de passe :" label-for="signup-password-check">
+											<b-form-input id="signup-password-check" v-model="form.passwordCheck" type="password" placeholder="Entrez votre mot de passe"></b-form-input>
+										</b-form-group>
+									</div>
+									<small tabindex="-1" class="form-text text-muted">Il doit contenir au moins 8 caractères dont au moins une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
+								</b-form-row>
 
 								<b-form-group id="input-group-avatar" label="Avatar : (optionnel)" label-for="signup-avatar" class="mt-3">
 									<b-form-file
@@ -99,6 +116,8 @@ export default {
 			form: {
 				prenom: "",
 				nom: "",
+				password: "",
+				passwordCheck: "",
 				admin: "",
 			},
 		};
@@ -124,9 +143,12 @@ export default {
 			let userId = this.$user.userId;
 			let prenom = this.form.prenom;
 			let nom = this.form.nom;
-			let email = this.$user.email;
+			let email = this.form.email;
+			let password = this.form.password;
+			const passwordCheck = this.form.passwordCheck;
 			let admin = this.form.admin;
 			let checkAdmin = false;
+			let checkEmail = false;
 			const formData = new FormData();
 			if (prenom === undefined || prenom.length === 0) {
 				prenom = this.$user.prenom;
@@ -137,6 +159,18 @@ export default {
 				nom = this.$user.nom;
 			} else {
 				formData.append("nom", nom);
+			}
+			if (email === undefined || email.length === 0) {
+				email = this.$user.email;
+				checkEmail = true;
+			} else if (email == this.$user.email) {
+				this.message = "Email déjà utilisé";
+			} else {
+				formData.append("email", email);
+				checkEmail = true;
+			}
+			if (password != undefined || password.length != 0) {
+				formData.append("password", password);
 			}
 			if (this.FILE != null) {
 				formData.append("image", this.FILE, this.FILE.name);
@@ -156,7 +190,7 @@ export default {
 			} else {
 				this.message = "Le code admin saisi est invalide";
 			}
-			if (checkAdmin === true) {
+			if (password === passwordCheck && checkAdmin === true && checkEmail === true) {
 				axios
 					.put(`http://localhost:3000/api/auth/modify_user/${userId}`, formData, {
 						headers: {
@@ -169,7 +203,14 @@ export default {
 						const token = user.token;
 						localStorage.setItem("user", JSON.stringify({ userId: userId, nom: nom, prenom: prenom, admin: admin, token: token, email: email }));
 						location.reload();
+					})
+					.catch((error) => {
+						if (error.response.status === 401) {
+							this.message = error.response.data.message;
+						}
 					});
+			} else if (password != passwordCheck) {
+				this.message = "Les mots de passe saisis ne correspondent pas";
 			}
 		},
 

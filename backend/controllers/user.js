@@ -91,33 +91,65 @@ exports.login = (req, res, next) => {
 };
 // Route PUT - Modify one user
 exports.modifyUser = (req, res, next) => {
-	let prenom = "";
-	let nom = "";
-	let image = "";
-	let admin = req.body.admin;
-	let userId = req.params.id;
-	if (req.body.prenom) {
-		prenom = "prenom =" + sql.escape(req.body.prenom) + ", ";
-	}
-	if (req.body.nom) {
-		nom = "nom =" + sql.escape(req.body.nom) + ", ";
-	}
-	let imageURL = req.file ? req.file.filename : null;
-	if (req.file) {
-		image = "image =" + sql.escape(req.file.filename) + ", ";
-	}
-	if (imageURL != null) {
-		sql.query("SELECT image FROM users WHERE id = ?", [userId], (error, results, fields) => {
-			if (error) throw error;
-			if (results[0].image != null && results[0].image != "default-pp.jpg") {
-				fs.unlinkSync(`../frontend/public//images/uploads/${results[0].image}`);
+	const modifyuser = (password) => {
+		let prenom = "";
+		let nom = "";
+		let email = "";
+		let image = "";
+		let admin = req.body.admin;
+		let userId = req.params.id;
+		if (password != undefined) {
+			var formPassword = "password =" + sql.escape(password) + ", ";
+		} else {
+			formPassword = "";
+		}
+		if (req.body.prenom) {
+			prenom = "prenom =" + sql.escape(req.body.prenom) + ", ";
+		}
+		if (req.body.nom) {
+			nom = "nom =" + sql.escape(req.body.nom) + ", ";
+		}
+		if (req.body.email) {
+			// Check if the email is valid with "validator"
+			if (!validator.isEmail(req.body.email)) {
+				return res.status(401).json({ message: "Votre email est invalide !" });
 			}
+			// Email encryption (AES) with "crypto-js"
+			const cryptedEmail = CryptoJS.AES.encrypt(req.body.email, key, { iv: iv }).toString();
+			email = "email =" + sql.escape(cryptedEmail) + ", ";
+		}
+		let imageURL = req.file ? req.file.filename : null;
+		if (req.file) {
+			image = "image =" + sql.escape(req.file.filename) + ", ";
+		}
+		if (imageURL != null) {
+			sql.query("SELECT image FROM users WHERE id = ?", [userId], (error, results, fields) => {
+				if (error) throw error;
+				if (results[0].image != null && results[0].image != "default-pp.jpg") {
+					fs.unlinkSync(`../frontend/public//images/uploads/${results[0].image}`);
+				}
+			});
+		}
+		sql.query(`UPDATE users SET ${prenom} ${nom} ${email} ${image} ${formPassword} admin = ? WHERE id = ?`, [admin, userId], (error, results, fields) => {
+			if (error) throw error;
+			return res.status(200).json(results);
 		});
+	};
+	if (req.body.password) {
+		if (!validator.isStrongPassword(req.body.password)) {
+			return res
+				.status(401)
+				.json({ message: "Votre mot de passe n'est pas assez fort ! Il doit contenir au moins 8 caractères dont au moins une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial." });
+		}
+		bcrypt
+			.hash(req.body.password, 10)
+			.then((hash) => {
+				modifyuser(hash);
+			})
+			.catch((error) => res.status(500).json({ error }));
+	} else {
+		modifyuser(undefined);
 	}
-	sql.query(`UPDATE users SET ${prenom} ${nom} ${image} admin = ? WHERE id = ?`, [admin, userId], (error, results, fields) => {
-		if (error) throw error;
-		return res.status(200).json(results);
-	});
 };
 // Route DELETE - Delete one user
 exports.deleteUser = (req, res, next) => {

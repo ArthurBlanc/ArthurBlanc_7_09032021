@@ -9,7 +9,7 @@
 		<main>
 			<b-container>
 				<b-row>
-					<b-col md="8" offset-md="2" v-if="connected">
+					<b-col lg="9" xl="8" class="mx-auto" v-if="connected">
 						<Post :getPosts="this.getAllPosts" :posts="posts" :postButton="'Créer une discussion ou partager une image'" :imageRequired="false" :textRequired="false" />
 					</b-col>
 				</b-row>
@@ -73,7 +73,6 @@ export default {
 
 <style scoped>
 .bg-cover {
-	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/accueil-jumbotron.jpg");
-	background-size: cover;
+	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("../assets/accueil-jumbotron.jpg");
 }
 </style>

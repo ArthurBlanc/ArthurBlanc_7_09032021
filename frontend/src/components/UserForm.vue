@@ -4,17 +4,17 @@
 			<b-form-row>
 				<div class="col">
 					<b-form-group id="input-group-prenom" :label="prenomLabel" label-for="signup-prenom">
-						<b-form-input id="signup-prenom" v-model="form.prenom" type="text" :placeholder="prenomPlaceholder" :required="prenomRequired"></b-form-input>
+						<b-form-input id="signup-prenom" v-model="form.prenom" type="text" maxlength="128" :placeholder="prenomPlaceholder" :required="prenomRequired"></b-form-input>
 					</b-form-group>
 				</div>
 				<div class="col">
 					<b-form-group id="input-group-nom" :label="nomLabel" label-for="signup-nom">
-						<b-form-input id="signup-nom" v-model="form.nom" type="text" :placeholder="nomPlaceholder" :required="nomRequired"></b-form-input>
+						<b-form-input id="signup-nom" v-model="form.nom" maxlength="128" :placeholder="nomPlaceholder" :required="nomRequired"></b-form-input>
 					</b-form-group>
 				</div>
 			</b-form-row>
 			<b-form-group id="input-group-email" :label="emailLabel" label-for="signup-email">
-				<b-form-input id="signup-email" v-model="form.email" type="email" :placeholder="emailPlaceholder" :required="emailRequired"></b-form-input>
+				<b-form-input id="signup-email" v-model="form.email" type="text" :placeholder="emailPlaceholder" :required="emailRequired"></b-form-input>
 			</b-form-group>
 			<b-form-row>
 				<div class="col">
@@ -28,7 +28,7 @@
 						<b-form-input id="signup-password-check" v-model="form.passwordCheck" type="password" :placeholder="passwordcheckPlaceholder" :required="passwordcheckRequired"></b-form-input>
 					</b-form-group>
 				</div>
-				<small tabindex="-1" class="form-text text-muted">Il doit contenir au moins 8 caractères dont au moins une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
+				<small tabindex="-1" class="form-text text-user-form">Il doit contenir au moins 8 caractères dont au moins une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
 			</b-form-row>
 
 			<b-form-group id="input-group-avatar" :label="avatarLabel" label-for="signup-avatar" class="mt-3">
@@ -42,8 +42,9 @@
 				></b-form-file>
 			</b-form-group>
 
-			<b-form-group id="input-group-admin" :label="adminLabel" label-for="signup-admin" description="Si vous etes administrateur, veuillez entrez votre code admin">
+			<b-form-group id="input-group-admin" :label="adminLabel" label-for="signup-admin">
 				<b-form-input id="signup-admin" v-model="form.admin" type="text" :placeholder="adminPlaceholder"></b-form-input>
+				<small tabindex="-1" class="form-text text-user-form">Si vous etes administrateur, veuillez entrez votre code admin</small>
 			</b-form-group>
 
 			<b-alert show variant="danger" v-if="message != ''">{{ message }}</b-alert>
@@ -157,22 +158,33 @@ export default {
 			let password = this.form.password;
 			const passwordCheck = this.form.passwordCheck;
 			let admin = this.form.admin;
+			const nameRegex = /^([A-Za-z][A-Za-z ,.'-]*){1,128}$/;
+			let checkPrenom = false;
+			let checkNom = false;
 			let checkAdmin = false;
 			let checkEmail = false;
 			const formData = new FormData();
 			// if prenom is empty AND user on profile page prenom will not change
 			if ((prenom === undefined || prenom.length === 0) && profilePage) {
 				prenom = this.$user.prenom;
-			} else {
+				checkPrenom = true;
+			} else if (!nameRegex.test(prenom)) {
+				this.message = "Votre prénom semble invalide";
+			} else if (nameRegex.test(prenom)) {
 				// else add prenom in submit
 				formData.append("prenom", prenom);
+				checkPrenom = true;
 			}
 			// if nom is empty AND user on profile page nom will not change
 			if ((nom === undefined || nom.length === 0) && profilePage) {
 				nom = this.$user.nom;
+				checkNom = true;
+			} else if (!nameRegex.test(nom)) {
+				this.message = "Votre nom semble invalide";
 			} else {
 				// else add nom in submit
 				formData.append("nom", nom);
+				checkNom = true;
 			}
 			// if email is empty AND user on profile page nom will not change and email is checked
 			if ((email === undefined || email.length === 0) && profilePage) {
@@ -220,7 +232,7 @@ export default {
 				this.message = "Le code admin saisi est invalide";
 			}
 			// if password, admin and email are checked the form is sended
-			if (password === passwordCheck && checkAdmin === true && checkEmail === true) {
+			if (password === passwordCheck && checkAdmin === true && checkEmail === true && checkPrenom === true && checkNom === true) {
 				// if user on profile page the form is sended for modify user
 				if (profilePage) {
 					axios

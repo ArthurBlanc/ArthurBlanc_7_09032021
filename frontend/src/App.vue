@@ -44,4 +44,35 @@ body {
 	display: flex;
 	flex-direction: column;
 }
+
+.bg-cover {
+	background-size: cover;
+	background-position: center;
+}
+
+.btn-primary {
+	background-color: #0056b3 !important;
+	border-color: #0056b3 !important;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+	background-color: #0056b3 !important;
+}
+
+.navlink .nav-link {
+	color: #0056b3 !important;
+}
+
+.post-date {
+	color: #595959 !important;
+}
+
+.text-user-form {
+	color: #474d52;
+}
+
+.footer-dev-name {
+	color: #cfcfd3;
+}
 </style>

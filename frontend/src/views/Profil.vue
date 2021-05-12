@@ -6,7 +6,7 @@
 		<main>
 			<b-container>
 				<b-row>
-					<b-col md="8" offset-md="2" v-if="connected">
+					<b-col lg="9" xl="8" class="mx-auto" v-if="connected">
 						<div class="mb-3">
 							<div class="mb-3" v-if="modify == false">
 								<b-list-group>
@@ -114,7 +114,7 @@ export default {
 
 <style scoped>
 .bg-cover {
-	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/accueil-jumbotron.jpg");
-	background-size: cover;
+	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("../assets/profil-jumbotron.jpg");
+	background-position: unset !important;
 }
 </style>

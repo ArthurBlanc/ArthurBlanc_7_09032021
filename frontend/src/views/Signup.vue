@@ -9,11 +9,11 @@
 		<main>
 			<b-container>
 				<b-row>
-					<b-col md="8" offset-md="2">
+					<b-col lg="9" xl="8" class="mx-auto">
 						<div class="mb-3">
 							<nav>
 								<b-nav pills align="center" class="mb-3">
-									<b-nav-item to="/">Se connecter</b-nav-item>
+									<b-nav-item to="/" class="navlink">Se connecter</b-nav-item>
 									<b-nav-item to="/signup" class="text-white" active>S'inscrire</b-nav-item>
 								</b-nav>
 							</nav>
@@ -63,7 +63,6 @@ export default {
 
 <style scoped lang="scss">
 .bg-cover {
-	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/accueil-jumbotron.jpg");
-	background-size: cover;
+	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("../assets/signup-jumbotron.jpg");
 }
 </style>

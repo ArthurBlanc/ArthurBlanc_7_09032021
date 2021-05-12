@@ -7,8 +7,9 @@
 		<main>
 			<b-container>
 				<b-row>
-					<b-col md="8" offset-md="2" v-if="connected">
+					<b-col lg="9" xl="8" class="mx-auto" v-if="connected">
 						<OnePost :getPosts="this.getOnePost" :posts="posts" :visible="visible" />
+						<b-alert show variant="danger" v-if="message != ''">{{ message }}</b-alert>
 						<div v-if="modify">
 							<b-form>
 								<b-form-file
@@ -20,7 +21,7 @@
 									class="text-left"
 									@change="onFileUpload"
 								></b-form-file>
-								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" required></b-form-textarea>
+								<b-form-textarea id="modify-content" rows="3" max-rows="6" :value="post.content" maxlength="512" required></b-form-textarea>
 
 								<div>
 									<b-button class="mt-3" variant="primary" type="submit" @click="modifyOnePost(), (modify = false)">Publier les modifications</b-button>
@@ -54,6 +55,7 @@ export default {
 
 	data() {
 		return {
+			message: "",
 			authorized: false,
 			modify: false,
 			visible: true,
@@ -108,23 +110,30 @@ export default {
 		modifyOnePost() {
 			const postId = this.$route.params.id;
 			const content = document.querySelector("#modify-content").value;
+			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/]*$/;
 			const formData = new FormData();
 			formData.append("postId", this.$user.userId);
 			formData.append("content", content);
 			if (this.FILE != null) {
 				formData.append("image", this.FILE, this.FILE.name);
-			}
-			axios
-				.put(`http://localhost:3000/api/posts/${postId}`, formData, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${this.$token}`,
-					},
-				})
+			} else if ((content != "") & (content < 3)) {
+				this.message = "Votre publication doit contenir au minimum 3 caractères";
+			} else if ((content != "") & !regex.test(content)) {
+				this.message = "Votre modification semble etre invalide";
+			} else {
+				this.message = "";
+				axios
+					.put(`http://localhost:3000/api/posts/${postId}`, formData, {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.$token}`,
+						},
+					})
 
-				.then(() => {
-					this.getOnePost();
-				});
+					.then(() => {
+						this.getOnePost();
+					});
+			}
 		},
 	},
 };
@@ -132,7 +141,6 @@ export default {
 
 <style scoped>
 .bg-cover {
-	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%), url("../assets/accueil-jumbotron.jpg");
-	background-size: cover;
+	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("../assets/post-jumbotron.jpg");
 }
 </style>

@@ -1,7 +1,7 @@
 // Import "joi" package - Object schema validation
 const Joi = require("joi");
 
-const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/]*$/;
+const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/!?]*$/;
 
 const Post = {
 	post: Joi.object().keys({

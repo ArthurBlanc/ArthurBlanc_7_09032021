@@ -218,7 +218,7 @@ export default {
 		// Form
 		onSubmit() {
 			const formData = new FormData();
-			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/]*$/;
+			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/!?]*$/;
 			formData.append("userId", this.$user.userId);
 			formData.append("content", this.content);
 			if (this.FILE != null) {
@@ -314,7 +314,7 @@ export default {
 		createComment(postId) {
 			const userId = this.$user.userId;
 			const content = this.commentContent;
-			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/]*$/;
+			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/!?]*$/;
 			if (!regex.test(content)) {
 				this.messageComment = "Votre commentaire semble etre invalide";
 			} else {

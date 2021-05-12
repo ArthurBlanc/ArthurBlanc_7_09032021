@@ -27,7 +27,7 @@
 									<b-button class="mt-3" variant="primary" type="submit" @click="modifyOnePost(), (modify = false)">Publier les modifications</b-button>
 								</div>
 								<div>
-									<b-button class="mt-3" variant="danger" v-if="modify" @click="modify = false">Annuler les modifications</b-button>
+									<b-button class="mt-3 mb-3" variant="danger" v-if="modify" @click="modify = false">Annuler les modifications</b-button>
 								</div>
 							</b-form>
 						</div>
@@ -110,7 +110,7 @@ export default {
 		modifyOnePost() {
 			const postId = this.$route.params.id;
 			const content = document.querySelector("#modify-content").value;
-			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/]*$/;
+			const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,.'\-()%:/!?]*$/;
 			const formData = new FormData();
 			formData.append("postId", this.$user.userId);
 			formData.append("content", content);

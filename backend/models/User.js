@@ -1,7 +1,7 @@
 // Import "joi" package - Object schema validation
 const Joi = require("joi");
 
-const nameRegex = /^([A-Za-z][A-Za-z ,.'-]*){1,128}$/;
+const nameRegex = /^([A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ ,.'-]*){1,128}$/;
 
 const User = {
 	user: Joi.object().keys({

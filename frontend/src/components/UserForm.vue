@@ -158,7 +158,7 @@ export default {
 			let password = this.form.password;
 			const passwordCheck = this.form.passwordCheck;
 			let admin = this.form.admin;
-			const nameRegex = /^([A-Za-z][A-Za-z ,.'-]*){1,128}$/;
+			const nameRegex = /^([A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ ,.'-]*){1,128}$/;
 			let checkPrenom = false;
 			let checkNom = false;
 			let checkAdmin = false;

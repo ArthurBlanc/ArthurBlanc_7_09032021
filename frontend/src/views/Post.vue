@@ -116,7 +116,8 @@ export default {
 			formData.append("content", content);
 			if (this.FILE != null) {
 				formData.append("image", this.FILE, this.FILE.name);
-			} else if ((content != "") & (content < 3)) {
+			}
+			if ((content != "") & (content < 3)) {
 				this.message = "Votre publication doit contenir au minimum 3 caractères";
 			} else if ((content != "") & !regex.test(content)) {
 				this.message = "Votre modification semble etre invalide";

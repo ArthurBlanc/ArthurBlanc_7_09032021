@@ -176,7 +176,7 @@ My role was to create the front-end and back-end of the MVP (Minimum Viable Prod
 
 -   `npm install` or `yarn`
 
-3. Create a .env file and fill it out using the .env.example file as an example.
+3. Create a **.env** file and fill it out using the **.env.example** file as an example.
 
 4. Launch the back-end:
 
